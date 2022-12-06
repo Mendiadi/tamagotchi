@@ -5,7 +5,7 @@ import pygame
 import time
 import numpy as np
 
-
+from utils import RGBColors
 
 class Animator:
 
@@ -27,14 +27,19 @@ class Animator:
 
 
     def render(self, win, pad=30, angel=4.5, size=45):
+
         for i in range(10):
             for j in range(10):
                 if self._board[i][j] == 1:
-                    pygame.draw.rect(win, (0, 0, 0), ((j + angel) * pad, (angel + i) * pad, size, size))
+                    pygame.draw.rect(win, RGBColors.SKIN_COLOR.value,
+                                     ((j + angel) * pad, (angel + i) * pad, size, size))
                 elif self._board[i][j] == 0:
-                    pygame.draw.rect(win, (255, 255, 255), ((j + angel) * pad, (angel + i) * pad, size, size))
+                    pygame.draw.rect(win, RGBColors.BLACK.value,
+                                     ((j + angel) * pad, (angel + i) * pad, size, size))
                 elif self._board[i][j] == 2:
-                    pygame.draw.rect(win, (255, 100, 255), ((j + angel) * pad, (angel + i) * pad, size, size))
+                    pygame.draw.rect(win,RGBColors.PINK.value,
+                                     ((j + angel) * pad, (angel + i) * pad, size, size))
+
 
     def _invert(self):
         time.sleep(self._rate)
@@ -59,8 +64,14 @@ class Animator:
 
     def _dead(self):
         time.sleep(self._rate)
-        self._board = list(zip(*self._board[::-1]))
+        if self._inverted:
+            self._inverted = False
+            self._board = list(zip(*self._board[::]))
+        else:
+            self._board = list(zip(*self._board[::-1]))
+
         time.sleep(3)
+
 
     def compile(self, board):
         self._board = board
@@ -92,11 +103,13 @@ class Animator:
     def _move_legs(self, moves):
 
         for move in moves:
-            print(move)
+
             time.sleep(self._rate)
             if not self._inverted:
+
                 self._legs[move]()
             else:
+
                 self._legs_invert[move]()
 
     def execute(self, command: typing.Literal['flip', 'dead', 'invert', 'move'], moves=None):
@@ -122,6 +135,6 @@ class Animator:
     def _move(self, src, dest):
         if type(self._board[0]) == tuple:
             return
-        print(src,dest)
+
         self._board[src[0]][src[1]] = 0
         self._board[dest[0]][dest[1]] = 1

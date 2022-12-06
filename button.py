@@ -2,14 +2,7 @@ import pygame
 
 from enum import Enum
 
-
-class RGBColors(Enum):
-    WHITE = (255, 255, 255)
-    BLACK = (0, 0, 0)
-    PINK = (255, 0, 255)
-    GREEN = (0, 255, 0)
-    RED = (255, 0, 0)
-
+from utils import RGBColors
 
 class Entity:
     def __init__(self, pos, color, width, height):
@@ -17,7 +10,7 @@ class Entity:
         self.height = height
         self.width = width
         self.rect = None
-        self.color = color
+        self.color = color.value
         self.is_hide = False
 
     def mouse_is_over(self) -> bool:
@@ -40,6 +33,7 @@ class Entity:
 
     def draw(self, win):
         if not self.is_hide:
+
             pygame.draw.rect(win, self.color, self.rect)
 
     def to_json(self):
@@ -56,6 +50,8 @@ class Clickable(Entity):
         self.onclick_function = None
         self.onclick_function_args = None
         self.is_clicked = False
+
+
     def onrelease(self):
         self.is_clicked = False
 
@@ -80,27 +76,26 @@ class Clickable(Entity):
 class Button(Clickable):
 
     def __init__(self, pos: tuple[int, int], color: RGBColors, txt: str, height: [float, int] = 50,
-                 width: [float, int] = 110):
+                 width: [float, int] = 110,font_color:RGBColors=RGBColors.WHITE,
+                 hover_color:RGBColors=RGBColors.PINK):
         super().__init__(pos, color, width, height)
 
         self.txt = txt
         self.font = pygame.font.SysFont("arial", 30)
-
-        self.render_font = self.font.render(self.txt, True, RGBColors.WHITE.value)
+        self.hover_color = hover_color.value
+        self.render_font = self.font.render(self.txt, True, font_color.value)
         self.rect = (self._x, self._y, self.render_font.get_width() + 10,
                      self.render_font.get_height() + 10)
-
+        self.base_color = self.color
     def draw(self, win):
-        if not self.is_hide:
-
-            pygame.draw.rect(win, self.color, self.rect)
-            win.blit(self.render_font, (self._x, self._y))
+        super().draw(win)
+        win.blit(self.render_font, (self._x, self._y))
 
     def _on_mark_style(self):
-        self.color = RGBColors.PINK.value
+        self.color = self.hover_color
 
     def _on_leave(self):
-        self.color = RGBColors.BLACK.value
+        self.color = self.base_color
 
     def update(self,event):
 

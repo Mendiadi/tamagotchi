@@ -23,13 +23,15 @@ class Character:
             [0, 0, 0, 1, 0, 0, 0, 0, 1, 0],
             [0, 0, 0, 1, 0, 0, 0, 0, 1, 0]]
 
-        self.life_bar = None
-        self.food_bar= None
-        self.happy = None
+        self.life_bar = 100
+        self.food_bar= 100
+        self.happy = 100
         self.age = 20
         self.angel = 0.6
         self.angel_ratio_2 = 0.15
         self.angel_ratio_3 = 0.3
+        self.evolution = 0
+
 
     def grow_up(self):
         # 20 -> 10 -> 0.6
@@ -44,16 +46,18 @@ class Character:
         if ((self.age + 5) //2) - (self.age // 2) == 2:
              self.angel_ratio_2 *= 2
              self.angel += self.angel_ratio_2
-
         else:
-
             self.angel_ratio_3 *= 2
             self.angel += self.angel_ratio_3
         if self.angel > 2:
             self.angel = int(self.angel)
         self.age += 5
+        self.evolution += 16.6666
+        if self.age < 50:
+            self.evolution += 0.1
 
-        print(f"{self.age} -> {self.age // 2} -> {self.angel}", )
+
+
 
     def eat(self,food):
         ...
