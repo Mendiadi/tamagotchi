@@ -63,6 +63,8 @@ class Clickable(Entity):
         self.onclick_function()
 
     def event(self,event):
+        if not event:
+            return
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             self.onclick()
         elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:

@@ -1,127 +1,70 @@
-
+import threading
+import time
 
 import pygame
 
 
 import animator
 from character import Character
-from button import Button
-from utils import RGBColors
-
-move_command = ["left", "right", "l_init", "r_init"]
+from screen import MainGame
+from utils import RGBColors,print_text_to_screen
 
 
-
-HEIGHT, WIDTH = 800,800
-
-def print_text_to_screen(text, win, x=100, y=500, size=30):
-    """
-    this function just print text to the surface
-    :param text: string to show
-    :param win: surface
-    :return:
-    """
-    font = pygame.font.SysFont("arial", size)
-    render = font.render(text, False, (0, 0, 0))
-    win.blit(render, (x, y))
 
 class Tamagotchi:
+    HEIGHT, WIDTH = 800, 800
+    FPS = 60
 
-    def __init__(self, character_):
-        self.character = character_
-        self.animate = animator.Animator(self.character.skeleton)
+    def __init__(self):
+        self.character = None
+        self.event_thread = threading.Event()
+        self.animate = None
+        self.is_paused = False
+        self.state = None
+        self.screen = None
+        self.run = True
 
-        self.btn_flip = Button((10, 10), RGBColors.SKIN_COLOR, "flip",font_color=RGBColors.BLACK)
-        self.btn_dead = Button((200, 10), RGBColors.SKIN_COLOR, "dead",font_color=RGBColors.BLACK)
-        self.btn_flip.set_onclick_function(self.make_flip)
-        self.btn_dead.set_onclick_function(self.dead)
-        self.btn_move_legs =  Button((550, 10), RGBColors.SKIN_COLOR, "animation",font_color=RGBColors.BLACK)
-        self.btn_move_legs.set_onclick_function(self.animation1)
-        self.grow_up_btn = Button((700,10),RGBColors.SKIN_COLOR,"grow",font_color=RGBColors.BLACK)
-        self.grow_up_btn.set_onclick_function(  self.character.grow_up)
+    def load(self,win):
 
-    def animation1(self):
-        self.animate.compile(self.character.skeleton)
-        self.animate.execute(self.character.Actions.ANIMATION1)
+        # db call for load saves
+        self.character = Character()
+        self.animate = animator.Animator(self.character.skeleton, self.event_thread)
+        self.screen = MainGame(win,self)
 
-    def make_flip(self):
-        self.animate.compile(self.character.skeleton)
-        self.animate.execute(self.character.Actions.FLIP)
+    def update_content(self):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_ESCAPE]:
+            time.sleep(0.0125)
 
-    def load_bg(self,win):
-        image = pygame.image.load("Template.png")
-        win.blit(image.convert(),(0,0))
+            self.pause()
 
-    def show_stats(self,win):
-        print_text_to_screen(f"Lives: {self.character.life_bar}%",
-                             win,100,600)
-        print_text_to_screen(f"Food: {self.character.food_bar}%",
-                             win, 300, 600)
-        print_text_to_screen(f"Happy: {self.character.happy}%",
-                             win, 500, 600)
-        print_text_to_screen(f"EVOLUTION RATE: {int(self.character.evolution)}%",
-                             win, 250, 680)
+    def pause(self):
+        if self.is_paused:
+            self.event_thread.clear()
+        else:
+            self.event_thread.set()
+        self.is_paused = not self.is_paused
+        print("pause",self.is_paused)
 
 
-    def dead(self):
-        self.animate.compile(self.character.skeleton)
-        self.animate.execute(self.character.Actions.DEAD)
+    def mainloop(self):
+        threading.main_thread().name = "mainloop"
+        clock = pygame.time.Clock()
+        dt = self.FPS
+        while self.run:
+            pygame.display.set_caption(f"FPS {int(clock.get_fps())}")
+            temp_event = None
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.run = False
+                    break
+                temp_event = event
+                self.update_content()
+            self.screen.update(dt,temp_event)
+            self.screen.render()
+            dt = clock.tick(self.FPS)
+
+        pygame.quit()
 
 
-    def idle(self):
-        self.animate.compile(self.character.skeleton)
-
-
-    def render(self, win):
-        win.fill("white")
-        self.load_bg(win)
-        self.animate.render(win,size=self.character.age,
-                            pad=self.character.age//2,
-                            angel=self.character.angel)
-        self.btn_flip.draw(win)
-        self.btn_dead.draw(win)
-        self.btn_move_legs.draw(win)
-
-        self.grow_up_btn.draw(win)
-        self.show_stats(win)
-
-        pygame.display.flip()
-
-    def update(self, dt,ev):
-        self.btn_dead.update(ev)
-        self.btn_flip.update(ev)
-        self.btn_move_legs.update(ev)
-        self.grow_up_btn.update(ev)
-        self.animate(rate=5 / dt)
-        if not self.animate._active and not self.animate._inverted:
-            self.idle()
-
-
-
-
-def main():
-    pygame.init()
-    fps = 60
-    win = pygame.display.set_mode((HEIGHT, WIDTH))
-    character = Character()
-    game = Tamagotchi(character)
-    run = True
-    clock = pygame.time.Clock()
-    dt = fps
-    while run:
-        pygame.display.set_caption(f"FPS {int(clock.get_fps())}")
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-                break
-
-            game.update(dt,event)
-            # if event.type == pygame.MOUSEMOTION:
-            #     print(pygame.mouse.get_pos())
-        game.render(win)
-        dt = clock.tick(fps)
-
-    pygame.quit()
-
-main()
 

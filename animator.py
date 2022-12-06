@@ -13,7 +13,7 @@ class Animator:
     of the main character
     """
 
-    def __init__(self, board):
+    def __init__(self, board,event_thread):
         self._inverted = False
         self._rate = None
         self._board = board
@@ -31,11 +31,14 @@ class Animator:
         self.surface = pygame.Surface((450, 350))
         self.rect = self.surface.get_rect()
         self.rect.x, self.rect.y = self.init_rect_pos
-        self.event = threading.Event()
+        self.event = event_thread
         self.animate_x = self.rect.x
-        threading.Thread(target=self.animate_moves, daemon=True).start()
+        self.need_to_move_surface = False
+        threading.Thread(target=self.move_sub_surface, daemon=True, name="move_surface").start()
 
-    def animate_moves(self):
+    # **************** Animations ******************************
+
+    def move_sub_surface(self):
         """
         performing the surface moves
         runs in thread
@@ -43,6 +46,8 @@ class Animator:
         """
         while 1:
             self.event.wait()
+            if not self.need_to_move_surface:
+                continue
             for i in range(5):
                 time.sleep(0.5)
                 self._move_surface(self.animate_x - (i * 3), self.rect.y)
@@ -59,19 +64,19 @@ class Animator:
         end = 0
         max_time = 20
         while end - start < max_time:
-            self.event.set()
+            self.event.wait()
             self._move_legs(["left", "right", "l_init", "r_init"])
             self._invert()
             self._move_legs(["left", "right", "l_init", "r_init"])
             self._invert()
             time.sleep(self._rate)
             end = time.time()
-        self.event.clear()
+
         self.stop()
 
     # *********************** Operations Methods **************************
 
-    def render(self, win: pygame.Surface, pad=30, angel=4.5, size=45):
+    def render(self, win, pad=30, angel=4.5, size=45):
         """
         render the matrix to the target surface
         :param win: surface
@@ -143,6 +148,7 @@ class Animator:
         stopping the animation
         :return:
         """
+        self.event.clear()
         self._active = False
         self.ready = False
 
@@ -158,8 +164,9 @@ class Animator:
         """
         self._rate = rate
         if not self._active and self.ready:
-            threading.Thread(target=self._exec, daemon=True).start()
+            threading.Thread(target=self._exec, daemon=True,name="animation").start()
             self._active = True
+            self.event.set()
 
     # ************************* MISC MOVES *******************************
 
