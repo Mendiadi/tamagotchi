@@ -1,13 +1,17 @@
+import enum
 import threading
 import time
-
 import pygame
 
 
 import animator
+from utils import GameState
 from character import Character
-from screen import MainGame
-from utils import RGBColors,print_text_to_screen
+from screen import (
+        MainGame,
+        MainMenu,
+        SplashScreen
+)
 
 
 
@@ -20,23 +24,34 @@ class Tamagotchi:
         self.event_thread = threading.Event()
         self.animate = None
         self.is_paused = False
-        self.state = None
         self.screen = None
         self.run = True
+        self.db = None
 
-    def load(self,win):
-
-        # db call for load saves
+    def start_game(self):
         self.character = Character()
         self.animate = animator.Animator(self.character.skeleton, self.event_thread)
-        self.screen = MainGame(win,self)
+
+
+    def load(self,win):
+        # db call for load saves
+        self.screen = SplashScreen(win,self)
+
+
+    def update_state(self,state):
+        if state == GameState.MAIN:
+            self.screen = MainGame(self.screen.win,self)
+        elif state == GameState.MENU:
+            self.screen = MainMenu(self.screen.win,self)
 
     def update_content(self):
+        """Updating the content of the game"""
+
         keys = pygame.key.get_pressed()
         if keys[pygame.K_ESCAPE]:
             time.sleep(0.0125)
-
             self.pause()
+
 
     def pause(self):
         if self.is_paused:

@@ -1,7 +1,4 @@
 import pygame
-
-from enum import Enum
-
 from utils import RGBColors
 
 class Entity:

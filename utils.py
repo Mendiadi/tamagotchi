@@ -1,6 +1,10 @@
 from enum import Enum
 import pygame
 
+class GameState(Enum):
+    MAIN = 0
+    MENU = 1
+
 class RGBColors(Enum):
     WHITE = (255, 255, 255)
     BLACK = (0, 0, 0)
