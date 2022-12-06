@@ -38,13 +38,14 @@ class Tamagotchi:
         self.btn_dead.set_onclick_function(self.dead)
         self.btn_turnaround = Button((400, 10), RGBColors.SKIN_COLOR, "turn",font_color=RGBColors.BLACK)
         self.btn_turnaround.set_onclick_function(self.turnaround)
-        self.btn_move_legs =  Button((600, 10), RGBColors.SKIN_COLOR, "legs",font_color=RGBColors.BLACK)
+        self.btn_move_legs =  Button((550, 10), RGBColors.SKIN_COLOR, "animation",font_color=RGBColors.BLACK)
         self.btn_move_legs.set_onclick_function(self.move_legs)
         self.grow_up_btn = Button((700,10),RGBColors.SKIN_COLOR,"grow",font_color=RGBColors.BLACK)
         self.grow_up_btn.set_onclick_function(  self.character.grow_up)
 
     def move_legs(self):
-        self.animate.execute(self.character.Actions.MOVE,move_command)
+        self.animate.compile(self.character.skeleton)
+        self.animate.execute("animation")
 
     def make_flip(self):
         self.animate.compile(self.character.skeleton)
@@ -83,7 +84,7 @@ class Tamagotchi:
         self.load_bg(win)
         self.animate.render(win,size=self.character.age,
                             pad=self.character.age//2,
-                            angel=self.character.age/self.character.angel)
+                            angel=self.character.angel)
         self.btn_flip.draw(win)
         self.btn_dead.draw(win)
         self.btn_move_legs.draw(win)
