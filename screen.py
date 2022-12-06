@@ -44,7 +44,7 @@ class MainGame(Screen):
 
         # init buttons
         self.btn_flip = Button((10, 10), RGBColors.SKIN_COLOR, "flip", font_color=RGBColors.BLACK)
-        self.btn_dead = Button((200, 10), RGBColors.SKIN_COLOR, "dead", font_color=RGBColors.BLACK)
+        self.btn_sleep = Button((200, 10), RGBColors.SKIN_COLOR, "sleep", font_color=RGBColors.BLACK)
         self.btn_animation = Button((550, 10), RGBColors.SKIN_COLOR, "animation", font_color=RGBColors.BLACK)
         self.grow_up_btn = Button((700, 10), RGBColors.SKIN_COLOR, "grow", font_color=RGBColors.BLACK)
         self.back_btn = Button((400, 10), RGBColors.SKIN_COLOR, "back", font_color=RGBColors.BLACK)
@@ -52,9 +52,9 @@ class MainGame(Screen):
         self.back_btn.set_onclick_function(self._on_leave)
         self.grow_up_btn.set_onclick_function(self.game.character.grow_up)
         self.btn_flip.set_onclick_function(self.make_flip)
-        self.btn_dead.set_onclick_function(self.dead)
+        self.btn_sleep.set_onclick_function(self.sleep)
         self.btn_animation.set_onclick_function(self.animation1)
-        self.buttons = (self.btn_flip, self.btn_dead, self.grow_up_btn, self.btn_animation,self.back_btn)
+        self.buttons = (self.btn_flip, self.btn_sleep, self.grow_up_btn, self.btn_animation, self.back_btn)
 
     def show_stats(self):
         """
@@ -123,13 +123,13 @@ class MainGame(Screen):
         self.game.animate.compile(self.game.character.skeleton)
         self.game.animate.execute(self.game.character.Actions.FLIP)
 
-    def dead(self):
+    def sleep(self):
         """
         perform dead
         :return:
         """
         self.game.animate.compile(self.game.character.skeleton)
-        self.game.animate.execute(self.game.character.Actions.DEAD)
+        self.game.animate.execute(self.game.character.Actions.SLEEP)
 
     def idle(self):
         """

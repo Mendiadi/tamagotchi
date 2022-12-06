@@ -6,7 +6,7 @@ class Character:
     class Actions:
         FLIP = "flip"
         ANIMATION1 = "animation"
-        DEAD = "dead"
+        SLEEP = "sleep"
 
 
     def __init__(self):
@@ -53,8 +53,11 @@ class Character:
             self.evolution += 0.1
 
 
+    def set_sleep(self):
+        ...
 
-
+    def set_awake(self):
+        ...
 
     def eat(self,food):
         ...

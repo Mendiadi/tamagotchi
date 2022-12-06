@@ -25,4 +25,5 @@ def print_text_to_screen(text, win, x=100, y=500, size=30,color=None):
         color = (0,0,0)
     font = pygame.font.SysFont("arial", size)
     render = font.render(text, False, color)
-    win.blit(render, (x, y))
+    for i in range(10):
+        win.blit(render, (x+(i*0.3), y+(i * 0.5) - i))

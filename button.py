@@ -1,5 +1,9 @@
 import pygame
+
+
 from utils import RGBColors
+import sounds
+
 
 class Entity:
     def __init__(self, pos, color, width, height):
@@ -52,7 +56,7 @@ class Clickable(Entity):
     def onrelease(self):
         self.is_clicked = False
 
-
+    @sounds.button
     def onclick(self):
         self.is_clicked = True
         if self.onclick_function_args:

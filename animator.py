@@ -20,7 +20,7 @@ class Animator:
 
         self._commands = {
             "animation": self.animation_1,
-            "dead": self._dead,
+            "sleep": self._sleep,
             "flip": self._flip,
 
         }
@@ -209,7 +209,7 @@ class Animator:
         time.sleep(self._rate)
         self.stop()
 
-    def _dead(self):
+    def _sleep(self):
         """
         perform dead
         :return:
