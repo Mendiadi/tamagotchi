@@ -5,8 +5,7 @@
 class Character:
     class Actions:
         FLIP = "flip"
-        MOVE = "move"
-        INVERT = "invert"
+        ANIMATION1 = "animation"
         DEAD = "dead"
 
 
@@ -40,13 +39,11 @@ class Character:
 
 
     def grow_up(self):
-        # 20 -> 10 -> 12
-        # 25 -> 12 -> 11
-        # 30 -> 15 -> 6
-        # 35 -> 17 -> 4
-        # 40 -> 20 -> 2
-        # 45 -> 22 -> 1
-        # 50 -> 25 -> 0.5
+        """
+        make the character grow up
+
+        :return:
+        """
         if self.age == 50:
             return
         self.age += 5
@@ -54,7 +51,7 @@ class Character:
         self.evolution += 16.6666
         if self.age < 50:
             self.evolution += 0.1
-        print(self.angel, self.age)
+
 
 
 
