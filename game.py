@@ -1,21 +1,17 @@
-import enum
 import threading
 import time
 import pygame
 
-
-import misc
-import animator
-from utils import GameState
-from character import Character
-from food import Pizza,Drink
-from screen import (
-        MainGame,
-        MainMenu,
-        SplashScreen,
-        ShopScreen
+from commons import misc, animator
+from commons.utils import GameState
+from characters import Demogordan
+from commons.food import Pizza, Drink
+from screens import (
+    MainGame,
+    MainMenu,
+    SplashScreen,
+    ShopScreen
 )
-
 
 
 class Tamagotchi:
@@ -31,31 +27,36 @@ class Tamagotchi:
         self.run = True
         self.db = None
         self.images = None
-        self.shop = {"pizza":Pizza(),"drink":Drink()}
-
+        self.shop = {"pizza": Pizza(), "drink": Drink()}
+        self.is_muted = True
 
     def start_game(self):
-        self.character = Character()
+
+        self.character = Demogordan()
         self.animate = animator.Animator(self.character.skeleton, self.event_thread)
 
-
-    def load(self,win):
-        #todo bring back the splash screen
+    def load(self, win):
+        # todo bring back the splash screen
         # db call for load saves
         self.images = misc.load_images()
         misc.sound.load_sounds()
-        self.screen = SplashScreen(win,self)
+        self.screen = SplashScreen(win, self)
         # self.start_game()
         # self.screen = MainGame(win,self)
 
-
-    def update_state(self,state):
+    def update_state(self, state):
         if state == GameState.MAIN:
-            self.screen = MainGame(self.screen.win,self)
+            self.is_muted = False
+            misc.sound.music(True)
+            self.screen = MainGame(self.screen.win, self)
         elif state == GameState.MENU:
-            self.screen = MainMenu(self.screen.win,self)
+            self.is_muted = True
+            misc.sound.music()
+            self.screen = MainMenu(self.screen.win, self)
         elif state == GameState.SHOP:
-            self.screen = ShopScreen(self.screen.win,self)
+            self.is_muted = True
+            misc.sound.music()
+            self.screen = ShopScreen(self.screen.win, self)
 
     def update_content(self):
         """Updating the content of the game"""
@@ -65,15 +66,18 @@ class Tamagotchi:
             time.sleep(0.0125)
             self.pause()
 
-
     def pause(self):
+        self.is_paused = not self.is_paused
         if self.is_paused:
+            misc.sound.music()
             self.event_thread.clear()
         else:
             self.event_thread.set()
-        self.is_paused = not self.is_paused
-        print("pause",self.is_paused)
+            if not self.is_muted:
+                misc.sound.music(True)
 
+
+        print("pause", self.is_paused)
 
     def mainloop(self):
         threading.main_thread().name = "mainloop"
@@ -88,11 +92,9 @@ class Tamagotchi:
                     break
                 temp_event = event
                 self.update_content()
-            self.screen.update(dt,temp_event)
+                print(self.is_muted)
+            self.screen.update(dt, temp_event)
             self.screen.render()
             dt = clock.tick(self.FPS)
 
         pygame.quit()
-
-
-

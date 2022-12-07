@@ -1,36 +1,13 @@
-import abc
-import threading
 import pygame
 
-from utils import RGBColors, print_text_to_screen, GameState
-from button import Button
-from misc import load_images
-
-
-class Screen(abc.ABC):
-    """Abstract screen class"""
-
-    def __init__(self, win, tamagochi):
-        self.win = win
-        self.game = tamagochi
-
-    @abc.abstractmethod
-    def render(self):
-        """
-        virtual pure func rendering all the entities to the screen
-        """
-        ...
-
-    @abc.abstractmethod
-    def _on_leave(self):
-        """virtual pure describe action for leaving screen"""
-        ...
-
-    @abc.abstractmethod
-    def update(self, delta_t, event):
-        """virtual pure func Updating all the data of the game"""
-        ...
-
+from commons import misc
+from .screen import Screen
+from entities import Button
+from commons.utils import (
+        GameState,
+        RGBColors,
+        print_text_to_screen
+)
 
 class MainGame(Screen):
     """
@@ -64,7 +41,9 @@ class MainGame(Screen):
         self.grow_up_btn = Button((700, 10), RGBColors.SKIN_COLOR, "grow", font_color=RGBColors.BLACK)
         self.back_btn = Button((400, 10), RGBColors.SKIN_COLOR, "back", font_color=RGBColors.BLACK)
         self.shop_btn = Button((300, 10), RGBColors.SKIN_COLOR, "shop", font_color=RGBColors.BLACK)
+        self.mute_btn = Button((80, 10), RGBColors.SKIN_COLOR, "mute", font_color=RGBColors.BLACK)
         # set onclick methods
+        self.mute_btn.set_onclick_function(self.mute)
         self.shop_btn.set_onclick_function(self._on_shop)
         self.back_btn.set_onclick_function(self._on_leave)
         self.grow_up_btn.set_onclick_function(self.game.character.grow_up)
@@ -72,7 +51,21 @@ class MainGame(Screen):
         self.btn_sleep.set_onclick_function(self.sleep)
         self.btn_animation.set_onclick_function(self.animation1)
         self.buttons = (self.btn_flip, self.btn_sleep, self.grow_up_btn,
-                        self.btn_animation, self.back_btn, self.button_food, self.drink_button, self.shop_btn)
+                        self.btn_animation, self.back_btn, self.button_food,
+                        self.drink_button, self.shop_btn,self.mute_btn)
+
+    def mute(self):
+        if not self.game.is_muted:
+            misc.sound.music()
+            self.mute_btn.txt = "unmute"
+            self.mute_btn.update_rect()
+            self.game.is_muted = True
+        else:
+            misc.sound.music(True)
+            self.mute_btn.txt = "mute"
+            self.mute_btn.update_rect()
+            self.game.is_muted =False
+
 
     def _on_shop(self):
         self.game.update_state(GameState.SHOP)
@@ -170,97 +163,3 @@ class MainGame(Screen):
         :return:
         """
         self.game.animate.compile(self.game.character.skeleton)
-
-
-class MainMenu(Screen):
-    """class for manage the main menu screen"""
-
-    def __init__(self, win, tamagochi):
-        super().__init__(win, tamagochi)
-        self.start_btn = Button((100, 500), RGBColors.BLACK, "START")
-        self.start_btn.set_onclick_function(self._on_leave)
-        self.buttons = (self.start_btn,)
-
-    def _on_leave(self):
-        # todo load saves
-        self.game.start_game()
-        self.game.update_state(GameState.MAIN)
-
-    def render(self):
-        self.win.fill(RGBColors.WHITE.value)
-        for button in self.buttons:
-            button.draw(self.win)
-        print_text_to_screen("THIS IS MAIN MENU", self.win, 100, 100)
-        pygame.display.flip()
-
-    def update(self, delta_t, event):
-        for button in self.buttons:
-            button.update(event)
-
-
-class SplashScreen(Screen):
-    """
-    perform the splash screen
-    """
-
-    def __init__(self, win, tamagochi):
-        super().__init__(win, tamagochi)
-        self.timer = threading.Timer(3, self._on_leave)
-        self.timer.setDaemon(True)
-        self.timer.name = "timer"
-        self.timer.start()
-
-    def _on_leave(self):
-        self.game.update_state(GameState.MENU)
-        self.timer.cancel()
-
-    def render(self):
-        self.win.fill(RGBColors.WHITE.value)
-        print_text_to_screen("THIS IS SPLASH SCREEN", self.win, 100, 100)
-        pygame.display.flip()
-
-    def update(self, delta_t, event): ...
-
-
-class ShopScreen(Screen):
-    def __init__(self, win, tamagochi):
-        super().__init__(win, tamagochi)
-
-        images = self.game.images
-        # init bg
-        self.background = images['shop']
-        self.drink_image = images['drink']
-        self.food_image = images['food']
-
-        # init buttons
-        self.button_food = Button((300, 180), image=self.food_image,
-                                  width=self.food_image.get_width(), height=self.food_image.get_height())
-        self.button_food.set_onclick_function(lambda: self.game.character.buy(self.game.shop['pizza']))
-        self.drink_button = Button((400, 180), image=self.drink_image,
-                                   width=self.drink_image.get_width(), height=self.drink_image.get_height())
-        self.drink_button.set_onclick_function(lambda: self.game.character.buy(self.game.shop['drink']))
-
-        self.back_btn = Button((400, 10), RGBColors.SKIN_COLOR, "back", font_color=RGBColors.BLACK)
-        self.back_btn.set_onclick_function(self._on_leave)
-        self.buttons = (self.drink_button, self.button_food, self.back_btn)
-
-    def _on_leave(self):
-        self.game.update_state(GameState.MAIN)
-
-    def render(self):
-        self.win.fill(RGBColors.BLACK.value)
-        self.win.blit(self.background,(0,0))
-        for btn in self.buttons:
-            btn.draw(self.win)
-        print_text_to_screen("SHOP", self.win, 100, 100,color=RGBColors.WHITE.value)
-        print_text_to_screen(f"your points : {self.game.character.points}",
-                             self.win, 300, 100,color=RGBColors.WHITE.value)
-        print_text_to_screen(f"pizza price : {self.game.shop['pizza'].price}",
-                             self.win, 270, 240,size=15,vertical=False,color=RGBColors.WHITE.value)
-        print_text_to_screen(f"drink price : {self.game.shop['drink'].price}",
-                             self.win, 400, 240,size=15,vertical=False,color=RGBColors.WHITE.value)
-        pygame.display.flip()
-
-    def update(self, delta_t, event):
-        for btn in self.buttons:
-            btn.update(event)

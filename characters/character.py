@@ -1,4 +1,4 @@
-from food import Pizza, Drink
+
 
 
 class Character:
@@ -8,34 +8,16 @@ class Character:
         SLEEP = "sleep"
 
     def __init__(self):
-        self.skeleton = [
-            [0, 0, 0, 2, 2, 2, 2, 2, 0, 0],
-            [0, 0, 0, 0, 1, 1, 1, 1, 0, 0],
-            [0, 0, 0, 1, 0, 0, 0, 0, 1, 0],
-            [0, 0, 0, 1, 1, 0, 0, 1, 1, 0],
-            [0, 0, 0, 1, 0, 1, 1, 0, 1, 0],
-            [0, 0, 1, 1, 0, 0, 0, 0, 1, 1],
-            [0, 0, 0, 1, 0, 0, 0, 0, 1, 0],
-            [0, 0, 0, 1, 1, 1, 1, 1, 1, 0],
-            [0, 0, 0, 1, 0, 0, 0, 0, 1, 0],
-            [0, 0, 0, 1, 0, 0, 0, 0, 1, 0]]
-        self.rate = {
-            20: 12,
-            25: 11,
-            30: 6,
-            35: 4
-            , 40: 2,
-            45: 1,
-            50: 0.5
-        }
+        self.skeleton = None
+        self.rate = None
         self.life_bar = 100
         self.food_bar = 50
         self.happy = 100
         self.age = 20
-        self.angel = self.rate[self.age]
+        self.angel = None
         self.level = 0
         self.points = 100
-        self.inventory = {"pizza": [Pizza(), Pizza(), Pizza()], "drink": [Drink(), Drink()]}
+        self.inventory = {"pizza": [], "drink": []}
         self.energy = 0
 
     def buy(self, food):
@@ -100,3 +82,4 @@ class Character:
 
     def calculate_happy(self):
         ...
+

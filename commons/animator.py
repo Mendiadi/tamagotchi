@@ -4,7 +4,7 @@ import pygame
 import time
 import numpy as np
 
-from utils import RGBColors
+from commons.utils import RGBColors
 
 
 class Animator:
