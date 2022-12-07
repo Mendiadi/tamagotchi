@@ -3,6 +3,7 @@ import pygame
 import game
 
 
+
 def main():
     pygame.init()
     tamagochi = game.Tamagotchi()
@@ -13,3 +14,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+

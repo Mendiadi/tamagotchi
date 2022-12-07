@@ -8,10 +8,12 @@ import misc
 import animator
 from utils import GameState
 from character import Character
+from food import Pizza,Drink
 from screen import (
         MainGame,
         MainMenu,
-        SplashScreen
+        SplashScreen,
+        ShopScreen
 )
 
 
@@ -29,6 +31,7 @@ class Tamagotchi:
         self.run = True
         self.db = None
         self.images = None
+        self.shop = {"pizza":Pizza(),"drink":Drink()}
 
 
     def start_game(self):
@@ -41,9 +44,9 @@ class Tamagotchi:
         # db call for load saves
         self.images = misc.load_images()
         misc.sound.load_sounds()
-        # self.screen = SplashScreen(win,self)
-        self.start_game()
-        self.screen = MainGame(win,self)
+        self.screen = SplashScreen(win,self)
+        # self.start_game()
+        # self.screen = MainGame(win,self)
 
 
     def update_state(self,state):
@@ -51,6 +54,8 @@ class Tamagotchi:
             self.screen = MainGame(self.screen.win,self)
         elif state == GameState.MENU:
             self.screen = MainMenu(self.screen.win,self)
+        elif state == GameState.SHOP:
+            self.screen = ShopScreen(self.screen.win,self)
 
     def update_content(self):
         """Updating the content of the game"""
