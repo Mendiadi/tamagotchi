@@ -31,7 +31,7 @@ class Character:
             50: 0.5
         }
         self.life_bar = 100
-        self.food_bar= 100
+        self.food_bar= 50
         self.happy = 100
         self.age = 20
         self.angel = self.rate[self.age]
@@ -60,7 +60,7 @@ class Character:
         ...
 
     def eat(self,food):
-        ...
+        self.food_bar += food
 
     def add_life(self,ratio):
         ...

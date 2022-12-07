@@ -2,7 +2,7 @@ import pygame
 
 
 from utils import RGBColors
-import sounds
+import misc
 
 
 class Entity:
@@ -15,16 +15,7 @@ class Entity:
         self.is_hide = False
 
     def mouse_is_over(self) -> bool:
-        mouse_x, mouse_y = pygame.mouse.get_pos()
-        return self.entity_is_over((mouse_x, mouse_y))
-
-    def entity_is_over(self, entity_pos):
-        x, y = entity_pos
-        if x not in range(self._x, self._x + self.width):
-            return False
-        if y not in range(self._y, self._y + self.height):
-            return False
-        return True
+        return pygame.Rect(self.rect).collidepoint(pygame.mouse.get_pos())
 
     def show(self):
         self.is_hide = False
@@ -56,7 +47,7 @@ class Clickable(Entity):
     def onrelease(self):
         self.is_clicked = False
 
-    @sounds.button
+    @misc.sound.button
     def onclick(self):
         self.is_clicked = True
         if self.onclick_function_args:
@@ -64,6 +55,7 @@ class Clickable(Entity):
         self.onclick_function()
 
     def event(self,event):
+
         if not event:
             return
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -78,21 +70,30 @@ class Clickable(Entity):
 
 class Button(Clickable):
 
-    def __init__(self, pos: tuple[int, int], color: RGBColors, txt: str, height: [float, int] = 50,
+    def __init__(self, pos: tuple[int, int],
+                 color: RGBColors=RGBColors.WHITE, txt: str="", height: [float, int] = 50,
                  width: [float, int] = 110,font_color:RGBColors=RGBColors.WHITE,
-                 hover_color:RGBColors=RGBColors.PINK):
+                 hover_color:RGBColors=RGBColors.PINK,image =None):
         super().__init__(pos, color, width, height)
+
+        self.image = image
 
         self.txt = txt
         self.font = pygame.font.SysFont("arial", 30)
         self.hover_color = hover_color.value
         self.render_font = self.font.render(self.txt, True, font_color.value)
         self.rect = (self._x, self._y, self.render_font.get_width() + 10,
-                     self.render_font.get_height() + 10)
+                     self.render_font.get_height() + 10)\
+        if not image else image.get_rect(topleft=self.get_pos())
         self.base_color = self.color
+
+
     def draw(self, win):
-        super().draw(win)
-        win.blit(self.render_font, (self._x, self._y))
+        if self.image:
+            win.blit(self.image,self.get_pos())
+        else:
+            super().draw(win)
+            win.blit(self.render_font, (self._x, self._y))
 
     def _on_mark_style(self):
         self.color = self.hover_color
@@ -101,10 +102,8 @@ class Button(Clickable):
         self.color = self.base_color
 
     def update(self,event):
-
         if self.mouse_is_over():
             self.event(event)
-        if self.mouse_is_over():
             self._on_mark_style()
         else:
             self._on_leave()

@@ -4,7 +4,7 @@ import time
 import pygame
 
 
-import sounds
+import misc
 import animator
 from utils import GameState
 from character import Character
@@ -28,6 +28,8 @@ class Tamagotchi:
         self.screen = None
         self.run = True
         self.db = None
+        self.images = None
+
 
     def start_game(self):
         self.character = Character()
@@ -35,9 +37,13 @@ class Tamagotchi:
 
 
     def load(self,win):
+        #todo bring back the splash screen
         # db call for load saves
-        sounds.load_sounds()
-        self.screen = SplashScreen(win,self)
+        self.images = misc.load_images()
+        misc.sound.load_sounds()
+        # self.screen = SplashScreen(win,self)
+        self.start_game()
+        self.screen = MainGame(win,self)
 
 
     def update_state(self,state):

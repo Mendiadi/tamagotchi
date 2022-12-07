@@ -1,11 +1,11 @@
 import abc
 import threading
-
 import pygame
+
 
 from utils import RGBColors, print_text_to_screen, GameState
 from button import Button
-
+from misc import load_images
 
 class Screen(abc.ABC):
     """Abstract screen class"""
@@ -39,10 +39,19 @@ class MainGame(Screen):
     def __init__(self, win, tamagochi):
         super().__init__(win,tamagochi)
 
+        images = self.game.images
         # init bg
-        self.background = pygame.image.load("Template.png")
+        self.background = images['bg']
+        self.drink_image = images['drink']
+        self.food_image = images['food']
 
         # init buttons
+        self.button_food = Button((300, 535), image=self.food_image,
+                width=self.food_image.get_width(), height=self.food_image.get_height())
+        self.button_food.set_onclick_function(lambda :self.game.character.eat(5))
+        self.drink_button = Button((350, 535), image=self.drink_image,
+                width=self.drink_image.get_width(), height=self.drink_image.get_height())
+        self.drink_button.set_onclick_function(lambda :self.game.character.eat(2))
         self.btn_flip = Button((10, 10), RGBColors.SKIN_COLOR, "flip", font_color=RGBColors.BLACK)
         self.btn_sleep = Button((200, 10), RGBColors.SKIN_COLOR, "sleep", font_color=RGBColors.BLACK)
         self.btn_animation = Button((550, 10), RGBColors.SKIN_COLOR, "animation", font_color=RGBColors.BLACK)
@@ -54,12 +63,14 @@ class MainGame(Screen):
         self.btn_flip.set_onclick_function(self.make_flip)
         self.btn_sleep.set_onclick_function(self.sleep)
         self.btn_animation.set_onclick_function(self.animation1)
-        self.buttons = (self.btn_flip, self.btn_sleep, self.grow_up_btn, self.btn_animation, self.back_btn)
+        self.buttons = (self.btn_flip, self.btn_sleep, self.grow_up_btn,
+                        self.btn_animation, self.back_btn,self.button_food,self.drink_button)
 
     def show_stats(self):
         """
         Rendering the stats and texts to the target
         """
+
         print_text_to_screen(f"Lives: {self.game.character.life_bar}%",
                              self.win, 100, 600)
         print_text_to_screen(f"Food: {self.game.character.food_bar}%",
@@ -78,7 +89,7 @@ class MainGame(Screen):
         texts objects that need to be rendered
         """
         self.win.fill(RGBColors.WHITE.value)
-        self.win.blit(self.background.convert(), (0, 0))
+        self.win.blit(self.background, (0, 0))
         for button in self.buttons:
             button.draw(self.win)
         self.game.animate.render(self.win, size=self.game.character.age,
