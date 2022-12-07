@@ -70,17 +70,17 @@ class MainGame(Screen):
         Rendering the stats and texts to the target
         """
 
-        print_text_to_screen(f"Lives: {self.game.character.life_bar}%",
+        print_text_to_screen(f"Health: {self.game.character.life_bar}%",
                              self.win, 100, 600)
-        print_text_to_screen(f"Food: {self.game.character.food_bar}%",
+        print_text_to_screen(f"Hanger: {self.game.character.food_bar}%",
                              self.win, 300, 600)
-        print_text_to_screen(f"ENERGY: {self.game.character.energy}%",
+        print_text_to_screen(f"Energy: {self.game.character.energy}%",
                              self.win, 300, 640)
         print_text_to_screen(f"Happy: {self.game.character.happy}%",
                              self.win, 500, 600)
         print_text_to_screen(f"EVOLUTION RATE: {int(self.game.character.level)}%",
                              self.win, 250, 680)
-        print_text_to_screen(f"POINTS: {int(self.game.character.points)}",
+        print_text_to_screen(f"Coins: {int(self.game.character.points)}",
                              self.win, 250, 720)
         if self.game.is_paused:
             print_text_to_screen("PAUSED (ESC) to cancel",

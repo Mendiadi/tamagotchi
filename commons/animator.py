@@ -35,7 +35,7 @@ class Animator:
         self.event = event_thread
         self.animate_x = self.rect.x
         self.need_to_move_surface = False
-        self.birth = False
+        self.birth = False #todo set build False
 
         threading.Thread(target=self.move_sub_surface, daemon=True, name="move_surface").start()
 
@@ -43,12 +43,14 @@ class Animator:
 
     def _start_animation(self,win):
         self._active = True
-        cmd = "for ( int i = 0; i < count; i++ ) %"
-        cmd2 = "{%      if ( td4 != 0 || td4 >= x )   %    "
-        cmd3 =  "    return success_building_your_pet%      else%       return 0%}"
+        cmd = "for ( int i = 0; i < count; i++ ) % {%"  \
+              "    if ( td4 != 0 || td4 >= x )%" \
+              "        return success_building_your_pet;%" \
+              "    else%" \
+              "        return 0;% }"
         y = 200
         i = 0
-        for  c in (cmd + cmd2 + cmd3):
+        for  c in (cmd):
             i += 1
             if c == "%":
                 y += 20
@@ -58,7 +60,7 @@ class Animator:
             time.sleep(0.05)
             print_text_to_screen(c, win, x=130 + (i*9),
                                  y=y, size=20, color=RGBColors.GREEN.value, vertical=False)
-        time.sleep(1)
+        time.sleep(2)
         self.stop()
         self.birth = True
 

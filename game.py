@@ -2,6 +2,8 @@ import threading
 import time
 import pygame
 
+from characters.demogordan2 import Demogordan2
+from characters.demogordan3 import Demogordan3
 from commons import misc, animator
 from commons.utils import GameState
 from characters import Demogordan
@@ -30,16 +32,37 @@ class Tamagotchi:
         self.shop = {"pizza": Pizza(), "drink": Drink()}
         self.is_muted = False
 
-
+    def reduce_params(self):
+        """REDUCING VALUES BY X TIME RUNS IN THREAD"""
+        time.sleep(5)
+        start = time.time()
+        end = 0
+        while True:
+            time.sleep(5)
+            if self.character.food_bar > 0:
+                self.character.food_bar -= 2
+            if end - start > 15: # if 3 secs passed
+                if self.character.happy > 0:
+                    if not self.character.food_bar < 50:
+                        self.character.happy -= 5
+                    else:
+                        self.character.happy -= 10
+                    start = time.time()
+                    end = 0
+                    continue
+            if self.character.energy > 0:
+                self.character.energy -= 2
+            end = time.time()
 
     def start_game(self):
-
-        self.character = Demogordan()
+        """init new game """
+        self.character = Demogordan2()
         self.animate = animator.Animator(self.character.skeleton, self.event_thread)
-
+        threading.Thread(target=self.reduce_params,daemon=True).start()
 
 
     def load(self, win):
+        """"""
         # todo bring back the splash screen
         # db call for load saves
         self.images = misc.load_images()
@@ -49,6 +72,7 @@ class Tamagotchi:
         # self.screen = MainGame(win,self)
 
     def update_state(self, state):
+        """updating game state"""
         if state == GameState.MAIN:
             if not self.is_muted:
                 misc.sound.music(True)
@@ -67,6 +91,7 @@ class Tamagotchi:
             self.pause()
 
     def pause(self):
+        """pause the game and the music"""
         self.is_paused = not self.is_paused
         if self.is_paused:
             misc.sound.music()

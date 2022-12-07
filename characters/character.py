@@ -18,7 +18,7 @@ class Character:
         self.level = 0
         self.points = 100
         self.inventory = {"pizza": [], "drink": []}
-        self.energy = 0
+        self.energy = 50
 
     def buy(self, food):
         if food.price > self.points:
@@ -49,20 +49,19 @@ class Character:
         self.energy -= 5
         self.food_bar -= 1
         self.points += 5
+        self.happy += 2
         return True
 
     def set_sleep(self):
         if self.energy > 80:
             return
-
+        self.happy += 2
         self.points += 5
         self.energy += 20
 
     def eat(self, food__):
         food_count = self.inventory[food__.name]
         if not food_count:
-            return
-        if self.points <= 0:
             return
         if self.energy < 1:
             return
@@ -79,6 +78,7 @@ class Character:
     def reduce_life(self, ratio):
         ...
 
-    def calculate_happy(self):
-        ...
+
+
+
 
