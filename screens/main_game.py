@@ -1,6 +1,6 @@
 import pygame
 
-
+from commons import  misc
 from .screen import Screen
 from entities import Button
 from commons.utils import (
@@ -57,7 +57,7 @@ class MainGame(Screen):
 
         self._is_start = False
 
-
+    @misc.sound.button
     def _on_shop(self):
         self.game.update_state(GameState.SHOP)
 
@@ -104,13 +104,14 @@ class MainGame(Screen):
         else:
 
             if not self._is_start:
-                print("once")
                 self.win.blit(self.background, (0, 0))
+                self.game.animate.compile(self.game.character.skeleton)
                 self.game.animate.render_starting_animation(self.win)
-                self._is_start= True
-        print("update display")
+                self._is_start = True
+
         pygame.display.flip()
 
+    @misc.sound.button
     def _on_leave(self):
         # todo  saves records
         self.game.update_state(GameState.MENU)
@@ -123,6 +124,7 @@ class MainGame(Screen):
         :param event: pygame event
 
         """
+        print("moshe")
         if self.game.is_paused:
             return
         for button in self.buttons:
@@ -131,6 +133,7 @@ class MainGame(Screen):
         if not self.game.animate._active and not self.game.animate._inverted:
             self.idle()
 
+    @misc.sound.button
     def animation1(self):
         """
         perform animation 1
@@ -139,16 +142,18 @@ class MainGame(Screen):
         self.game.animate.compile(self.game.character.skeleton)
         self.game.animate.execute(self.game.character.Actions.ANIMATION1)
 
+    @misc.sound.button
     def make_flip(self):
         """
         perform flip
         :return:
         """
-        if not self.game.character.set_flip():
+        if not self.game.character.set_flip(self.game.animate._active):
             return
         self.game.animate.compile(self.game.character.skeleton)
         self.game.animate.execute(self.game.character.Actions.FLIP)
 
+    @misc.sound.button
     def sleep(self):
         """
         perform dead
@@ -156,7 +161,8 @@ class MainGame(Screen):
         """
         self.game.animate.compile(self.game.character.skeleton)
         self.game.animate.execute(self.game.character.Actions.SLEEP)
-        self.game.character.set_sleep()
+        self.game.character.set_sleep(self.game.animate._active)
+
 
     def idle(self):
         """

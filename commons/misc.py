@@ -23,7 +23,7 @@ class Sounds:
 
     def load_sounds(self):
         self._sounds_collection["button"] = pygame.mixer.Sound("assets/sounds/button_sound_1.mp3")
-
+        self._sounds_collection['eat'] = pygame.mixer.Sound("assets/sounds/eat.mp3")
 
 
     def music(self,play=False):
@@ -33,6 +33,13 @@ class Sounds:
             pygame.mixer.music.play(10)
         else:
             pygame.mixer.music.pause()
+
+    def eat(self,func):
+        @functools.wraps(func)
+        def inner(*args,**kwargs):
+            self._sounds_collection['eat'].play()
+            return func(*args,**kwargs)
+        return inner
 
     def button(self,func):
         @functools.wraps(func)

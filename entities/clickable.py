@@ -1,6 +1,6 @@
 import pygame
 
-from commons import misc
+
 from commons.utils import RGBColors
 from .entity import Entity
 
@@ -21,7 +21,7 @@ class Clickable(Entity):
     def onrelease(self):
         self.is_clicked = False
 
-    @misc.sound.button
+
     def onclick(self):
         self.is_clicked = True
         if self.onclick_function_args:

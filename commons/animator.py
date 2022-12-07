@@ -42,6 +42,7 @@ class Animator:
     # **************** Animations ******************************
 
     def _start_animation(self,win):
+
         self._active = True
         cmd = "for ( int i = 0; i < count; i++ ) % {%"  \
               "    if ( td4 != 0 || td4 >= x )%" \
@@ -57,16 +58,25 @@ class Animator:
                 i = 1
                 continue
             print(c)
-            time.sleep(0.05)
+            time.sleep(0.02)
             print_text_to_screen(c, win, x=130 + (i*9),
                                  y=y, size=20, color=RGBColors.GREEN.value, vertical=False)
         time.sleep(2)
-        self.stop()
+
+        sep=True
+        size=20
+        pad=10
+        angel=12
+
+        self.render(win,pad+7,angel+6,size,sep)
         self.birth = True
+        self.stop()
+
 
     def render_starting_animation(self,win):
         if not self._active:
-            threading.Thread(target=self._start_animation,daemon=True,args=(win,)).start()
+            threading.Thread(target=self._start_animation,
+                             daemon=True,args=(win,),name="code").start()
 
     def move_sub_surface(self):
         """
@@ -85,6 +95,8 @@ class Animator:
                 time.sleep(0.5)
                 self._move_surface(self.animate_x + (i * 3), self.rect.y)
 
+
+
     def animation_1(self):
         """
         animation 1 performing
@@ -92,7 +104,7 @@ class Animator:
         """
         start = time.time()
         end = 0
-        max_time = 20
+        max_time = 10
         while end - start < max_time:
             self.event.wait()
             self._move_legs(["left", "right", "l_init", "r_init"])
@@ -106,7 +118,7 @@ class Animator:
 
     # *********************** Operations Methods **************************
 
-    def render(self, win, pad=30, angel=4.5, size=45):
+    def render(self, win, pad=30, angel=4.5, size=45,sep=False):
         """
         render the matrix to the target surface
         :param win: surface
@@ -115,18 +127,27 @@ class Animator:
         :param size: size of each pixel (rect)
         :return:
         """
-        win.blit(self.surface, (self.rect.x, self.rect.y))
-        self.surface.fill("black")
+        print(threading.current_thread().name)
+
+        if sep:
+            target = win
+
+        else:
+            target = self.surface
+            win.blit(target, (self.rect.x, self.rect.y))
+            target.fill(RGBColors.BLACK.value)
         for i in range(10):
             for j in range(10):
+                if sep:
+                    time.sleep(0.05)
                 if self._board[i][j] == 1:
-                    pygame.draw.rect(self.surface, RGBColors.SKIN_COLOR.value,
+                    pygame.draw.rect(target, RGBColors.SKIN_COLOR.value,
                                      ((j + angel) * pad, (angel + i) * pad, size, size))
                 elif self._board[i][j] == 0:
-                    pygame.draw.rect(self.surface, RGBColors.BLACK.value,
+                    pygame.draw.rect(target, RGBColors.BLACK.value,
                                      ((j + angel) * pad, (angel + i) * pad, size, size))
                 elif self._board[i][j] == 2:
-                    pygame.draw.rect(self.surface, RGBColors.PINK.value,
+                    pygame.draw.rect(target, RGBColors.PINK.value,
                                      ((j + angel) * pad, (angel + i) * pad, size, size))
 
     def compile(self, board):

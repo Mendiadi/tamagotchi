@@ -1,4 +1,4 @@
-
+from commons.misc import sound
 
 
 class Character:
@@ -32,6 +32,8 @@ class Character:
 
         :return:
         """
+        if not (self.food_bar == 100 and self.happy == 100 and self.energy == 100):
+            return
         if self.age == 50:
             return
         self.age += 5
@@ -39,26 +41,43 @@ class Character:
         self.level += 16.6666
         if self.age < 50:
             self.level += 1
+        self.energy = 50
+        self.food_bar = 50
 
-    def set_flip(self) -> bool:
+
+    def set_flip(self,active) -> bool:
+        if active:
+            return False
         if self.energy < 5:
             return False
         if self.food_bar < 1:
             return False
-
         self.energy -= 5
         self.food_bar -= 1
-        self.points += 5
+        self.points += 10
         self.happy += 2
+        if self.happy > 100:
+            self.happy = 100
         return True
 
-    def set_sleep(self):
-        if self.energy > 80:
+    def set_sleep(self,active):
+        """
+        update the stats of character
+        calls from the button only if animation not active
+        :param active:
+        :return:
+        """
+        if active:
             return
         self.happy += 2
         self.points += 5
         self.energy += 20
+        if self.happy > 100:
+            self.happy = 100
+        if self.energy > 100:
+            self.energy = 100
 
+    @sound.eat
     def eat(self, food__):
         food_count = self.inventory[food__.name]
         if not food_count:
@@ -68,7 +87,12 @@ class Character:
         food = food_count.pop()
 
         self.food_bar += food.rate
+        if self.food_bar > 100:
+            self.food_bar = 100
         self.happy += 2
+        if self.happy > 100:
+            self.happy = 100
+
         self.life_bar += 1
         self.energy -= 1
 

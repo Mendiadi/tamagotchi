@@ -45,13 +45,13 @@ class MainMenu(Screen):
         "options":(self.option_buttons,"OPTIONS"),
         "about":(self.buttons_about,"ABOUT")
         }
-
+    @misc.sound.button
     def _on_main(self):
         self._state = "main"
-
+    @misc.sound.button
     def _on_about(self):
         self._state = "about"
-
+    @misc.sound.button
     def _mute(self):
         if not self.game.is_muted:
             misc.sound.music()
@@ -63,12 +63,12 @@ class MainMenu(Screen):
             self.mute_btn.txt = "mute"
             self.mute_btn.update_rect()
             self.game.is_muted =False
-
+    @misc.sound.button
     def _on_leave(self):
         # todo load saves
         self.game.start_game()
         self.game.update_state(GameState.MAIN)
-
+    @misc.sound.button
     def _on_options(self):
         self._state = "options"
 

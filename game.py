@@ -2,11 +2,16 @@ import threading
 import time
 import pygame
 
-from characters.demogordan2 import Demogordan2
-from characters.demogordan3 import Demogordan3
+
 from commons import misc, animator
 from commons.utils import GameState
-from characters import Demogordan
+from characters import (
+        Demogordan,
+        Demogordan2,
+        Demogordan3,
+        Demogordan4,
+        Demogordan5
+)
 from commons.food import Pizza, Drink
 from screens import (
     MainGame,
@@ -31,6 +36,7 @@ class Tamagotchi:
         self.images = None
         self.shop = {"pizza": Pizza(), "drink": Drink()}
         self.is_muted = False
+        self.level = None
 
     def reduce_params(self):
         """REDUCING VALUES BY X TIME RUNS IN THREAD"""
@@ -56,10 +62,13 @@ class Tamagotchi:
 
     def start_game(self):
         """init new game """
-        self.character = Demogordan2()
+        self.character = Demogordan5()
         self.animate = animator.Animator(self.character.skeleton, self.event_thread)
+
         threading.Thread(target=self.reduce_params,daemon=True).start()
 
+    def change_evolution(self):
+        ...
 
     def load(self, win):
         """"""
@@ -67,9 +76,9 @@ class Tamagotchi:
         # db call for load saves
         self.images = misc.load_images()
         misc.sound.load_sounds()
-        self.screen = SplashScreen(win, self)
-        # self.start_game()
-        # self.screen = MainGame(win,self)
+        # self.screen = SplashScreen(win, self)
+        self.start_game()
+        self.screen = MainGame(win,self)
 
     def update_state(self, state):
         """updating game state"""

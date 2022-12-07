@@ -1,6 +1,7 @@
 import pygame
 
 
+from commons import misc
 from .screen import Screen
 from entities import Button
 from commons.utils import (
@@ -30,7 +31,7 @@ class ShopScreen(Screen):
         self.back_btn = Button((400, 10), RGBColors.SKIN_COLOR, "back", font_color=RGBColors.BLACK)
         self.back_btn.set_onclick_function(self._on_leave)
         self.buttons = (self.drink_button, self.button_food, self.back_btn)
-
+    @misc.sound.button
     def _on_leave(self):
         self.game.update_state(GameState.MAIN)
 

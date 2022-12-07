@@ -22,7 +22,7 @@ def verify_files():
 
             return False, img
     for sound in os.listdir("assets/sounds"):
-        if sound[:-4:] not in ("button_sound_1","music_bg"):
+        if sound[:-4:] not in ("button_sound_1","music_bg","eat"):
             return False,sound
     return True,None
 
