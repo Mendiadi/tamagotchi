@@ -1,6 +1,7 @@
 
 
 class Food:
+    """Provide the basic information about general food"""
     def __init__(self,price,rate,name):
         self.price = price
         self.rate = rate
@@ -8,6 +9,7 @@ class Food:
 
 
 class Pizza(Food):
+
     def __init__(self):
         super().__init__(10,5,"pizza")
 

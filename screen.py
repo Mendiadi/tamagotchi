@@ -94,7 +94,7 @@ class MainGame(Screen):
                              self.win, 300, 640)
         print_text_to_screen(f"Happy: {self.game.character.happy}%",
                              self.win, 500, 600)
-        print_text_to_screen(f"EVOLUTION RATE: {int(self.game.character.evolution)}%",
+        print_text_to_screen(f"EVOLUTION RATE: {int(self.game.character.level)}%",
                              self.win, 250, 680)
         print_text_to_screen(f"POINTS: {int(self.game.character.points)}",
                              self.win, 250, 720)
@@ -228,14 +228,15 @@ class ShopScreen(Screen):
 
         images = self.game.images
         # init bg
+        self.background = images['shop']
         self.drink_image = images['drink']
         self.food_image = images['food']
 
         # init buttons
-        self.button_food = Button((300, 200), image=self.food_image,
+        self.button_food = Button((300, 180), image=self.food_image,
                                   width=self.food_image.get_width(), height=self.food_image.get_height())
         self.button_food.set_onclick_function(lambda: self.game.character.buy(self.game.shop['pizza']))
-        self.drink_button = Button((400, 200), image=self.drink_image,
+        self.drink_button = Button((400, 180), image=self.drink_image,
                                    width=self.drink_image.get_width(), height=self.drink_image.get_height())
         self.drink_button.set_onclick_function(lambda: self.game.character.buy(self.game.shop['drink']))
 
@@ -247,13 +248,17 @@ class ShopScreen(Screen):
         self.game.update_state(GameState.MAIN)
 
     def render(self):
-        self.win.fill(RGBColors.WHITE.value)
+        self.win.fill(RGBColors.BLACK.value)
+        self.win.blit(self.background,(0,0))
         for btn in self.buttons:
             btn.draw(self.win)
-        print_text_to_screen("SHOP", self.win, 100, 100)
-        print_text_to_screen(f"your points : {self.game.character.points}", self.win, 300, 100)
-        print_text_to_screen(f"pizza price : {self.game.shop['pizza'].price}", self.win, 270, 250,size=15,vertical=False)
-        print_text_to_screen(f"drink price : {self.game.shop['drink'].price}", self.win, 400, 250,size=15,vertical=False)
+        print_text_to_screen("SHOP", self.win, 100, 100,color=RGBColors.WHITE.value)
+        print_text_to_screen(f"your points : {self.game.character.points}",
+                             self.win, 300, 100,color=RGBColors.WHITE.value)
+        print_text_to_screen(f"pizza price : {self.game.shop['pizza'].price}",
+                             self.win, 270, 240,size=15,vertical=False,color=RGBColors.WHITE.value)
+        print_text_to_screen(f"drink price : {self.game.shop['drink'].price}",
+                             self.win, 400, 240,size=15,vertical=False,color=RGBColors.WHITE.value)
         pygame.display.flip()
 
     def update(self, delta_t, event):

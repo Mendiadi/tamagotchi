@@ -12,7 +12,7 @@ def load_images():
     _images_collection["bg"] = pygame.image.load("bg.png").convert()
     _images_collection["drink"] = pygame.image.load("drink.png").convert()
     _images_collection["food"] = pygame.image.load("food.png").convert()
-
+    _images_collection['shop'] = pygame.image.load("shop.jpg").convert()
     return _images_collection
 
 
