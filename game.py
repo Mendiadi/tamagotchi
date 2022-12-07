@@ -28,12 +28,16 @@ class Tamagotchi:
         self.db = None
         self.images = None
         self.shop = {"pizza": Pizza(), "drink": Drink()}
-        self.is_muted = True
+        self.is_muted = False
+
+
 
     def start_game(self):
 
         self.character = Demogordan()
         self.animate = animator.Animator(self.character.skeleton, self.event_thread)
+
+
 
     def load(self, win):
         # todo bring back the splash screen
@@ -46,16 +50,12 @@ class Tamagotchi:
 
     def update_state(self, state):
         if state == GameState.MAIN:
-            self.is_muted = False
-            misc.sound.music(True)
+            if not self.is_muted:
+                misc.sound.music(True)
             self.screen = MainGame(self.screen.win, self)
         elif state == GameState.MENU:
-            self.is_muted = True
-            misc.sound.music()
             self.screen = MainMenu(self.screen.win, self)
         elif state == GameState.SHOP:
-            self.is_muted = True
-            misc.sound.music()
             self.screen = ShopScreen(self.screen.win, self)
 
     def update_content(self):
@@ -77,7 +77,6 @@ class Tamagotchi:
                 misc.sound.music(True)
 
 
-        print("pause", self.is_paused)
 
     def mainloop(self):
         threading.main_thread().name = "mainloop"
@@ -92,7 +91,6 @@ class Tamagotchi:
                     break
                 temp_event = event
                 self.update_content()
-                print(self.is_muted)
             self.screen.update(dt, temp_event)
             self.screen.render()
             dt = clock.tick(self.FPS)

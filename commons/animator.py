@@ -4,7 +4,8 @@ import pygame
 import time
 import numpy as np
 
-from commons.utils import RGBColors
+
+from commons.utils import RGBColors,print_text_to_screen
 
 
 class Animator:
@@ -34,9 +35,36 @@ class Animator:
         self.event = event_thread
         self.animate_x = self.rect.x
         self.need_to_move_surface = False
+        self.birth = False
+
         threading.Thread(target=self.move_sub_surface, daemon=True, name="move_surface").start()
 
     # **************** Animations ******************************
+
+    def _start_animation(self,win):
+        self._active = True
+        cmd = "for ( int i = 0; i < count; i++ ) %"
+        cmd2 = "{%      if ( td4 != 0 || td4 >= x )   %    "
+        cmd3 =  "    return success_building_your_pet%      else%       return 0%}"
+        y = 200
+        i = 0
+        for  c in (cmd + cmd2 + cmd3):
+            i += 1
+            if c == "%":
+                y += 20
+                i = 1
+                continue
+            print(c)
+            time.sleep(0.05)
+            print_text_to_screen(c, win, x=130 + (i*9),
+                                 y=y, size=20, color=RGBColors.GREEN.value, vertical=False)
+        time.sleep(1)
+        self.stop()
+        self.birth = True
+
+    def render_starting_animation(self,win):
+        if not self._active:
+            threading.Thread(target=self._start_animation,daemon=True,args=(win,)).start()
 
     def move_sub_surface(self):
         """

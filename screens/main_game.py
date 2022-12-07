@@ -1,6 +1,6 @@
 import pygame
 
-from commons import misc
+
 from .screen import Screen
 from entities import Button
 from commons.utils import (
@@ -41,9 +41,9 @@ class MainGame(Screen):
         self.grow_up_btn = Button((700, 10), RGBColors.SKIN_COLOR, "grow", font_color=RGBColors.BLACK)
         self.back_btn = Button((400, 10), RGBColors.SKIN_COLOR, "back", font_color=RGBColors.BLACK)
         self.shop_btn = Button((300, 10), RGBColors.SKIN_COLOR, "shop", font_color=RGBColors.BLACK)
-        self.mute_btn = Button((80, 10), RGBColors.SKIN_COLOR, "mute", font_color=RGBColors.BLACK)
+
         # set onclick methods
-        self.mute_btn.set_onclick_function(self.mute)
+
         self.shop_btn.set_onclick_function(self._on_shop)
         self.back_btn.set_onclick_function(self._on_leave)
         self.grow_up_btn.set_onclick_function(self.game.character.grow_up)
@@ -52,19 +52,10 @@ class MainGame(Screen):
         self.btn_animation.set_onclick_function(self.animation1)
         self.buttons = (self.btn_flip, self.btn_sleep, self.grow_up_btn,
                         self.btn_animation, self.back_btn, self.button_food,
-                        self.drink_button, self.shop_btn,self.mute_btn)
+                        self.drink_button, self.shop_btn)
 
-    def mute(self):
-        if not self.game.is_muted:
-            misc.sound.music()
-            self.mute_btn.txt = "unmute"
-            self.mute_btn.update_rect()
-            self.game.is_muted = True
-        else:
-            misc.sound.music(True)
-            self.mute_btn.txt = "mute"
-            self.mute_btn.update_rect()
-            self.game.is_muted =False
+
+        self._is_start = False
 
 
     def _on_shop(self):
@@ -100,14 +91,24 @@ class MainGame(Screen):
         main rendering point handle all the entities
         texts objects that need to be rendered
         """
-        self.win.fill(RGBColors.WHITE.value)
-        self.win.blit(self.background, (0, 0))
-        for button in self.buttons:
-            button.draw(self.win)
-        self.game.animate.render(self.win, size=self.game.character.age,
-                                 pad=self.game.character.age // 2,
-                                 angel=self.game.character.angel)
-        self.show_stats()
+
+        if self.game.animate.birth:
+            self.win.fill(RGBColors.WHITE.value)
+            self.win.blit(self.background, (0, 0))
+            for button in self.buttons:
+                button.draw(self.win)
+            self.game.animate.render(self.win, size=self.game.character.age,
+                                     pad=self.game.character.age // 2,
+                                     angel=self.game.character.angel)
+            self.show_stats()
+        else:
+
+            if not self._is_start:
+                print("once")
+                self.win.blit(self.background, (0, 0))
+                self.game.animate.render_starting_animation(self.win)
+                self._is_start= True
+        print("update display")
         pygame.display.flip()
 
     def _on_leave(self):

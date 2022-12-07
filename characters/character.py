@@ -69,7 +69,6 @@ class Character:
         food = food_count.pop()
 
         self.food_bar += food.rate
-        self.points -= food.price
         self.happy += 2
         self.life_bar += 1
         self.energy -= 1
