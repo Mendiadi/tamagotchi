@@ -42,6 +42,8 @@ class DB:
         db.close()
 
     def add_save(self, save):
+        if not save:
+            return
         db = sqlite3.connect("../tamagochi.db")
         cursor = db.cursor()
         col, vals = save.pack()
@@ -61,6 +63,8 @@ class DB:
         db.close()
 
     def get_save(self,save):
+        if not save:
+            return
         db = sqlite3.connect("../tamagochi.db")
         cursor = db.cursor()
         cursor.execute(f"select from game_saves where id = {save.id} and name = {save.name};")

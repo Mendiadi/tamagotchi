@@ -38,6 +38,7 @@ class Button(Clickable):
             win.blit(self.image, self.get_pos())
         else:
             super().draw(win)
+
         self.render_font = self.font.render(self.txt, True, self.font_color)
         win.blit(self.render_font, (self._x, self._y))
 

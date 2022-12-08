@@ -37,6 +37,7 @@ class ShopScreen(Screen):
     def _on_leave(self):
         self.game.update_state(GameState.MAIN)
 
+
     def render(self):
         self.win.fill(RGBColors.BLACK.value)
         self.win.blit(self.background, (0, 0))

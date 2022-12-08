@@ -99,6 +99,7 @@ class MainMenu(Screen):
     @misc.sound.button
     def _on_leave(self,save=None):
         self.game.start_game(save)
+
         self.game.update_state(GameState.MAIN)
 
     @misc.sound.button

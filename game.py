@@ -29,6 +29,7 @@ class Tamagotchi:
     FPS = 60
 
     def __init__(self):
+
         self.characters_collection = {  1:Demogordan,
                                         2:Demogordan2,
                                         3:Demogordan3,
@@ -46,9 +47,10 @@ class Tamagotchi:
         self.images = None
         self.shop = {"pizza": Pizza(), "drink": Drink()}
         self.is_muted = False
-        self.evolution = None # means demogordan upgrade
+        self.evolution = 0 # means demogordan upgrade
         self.is_freezed = False
         self.current_save = None
+        self.temp_game_progress = None # saves the progress of running game
 
 
     def reset(self):...
@@ -116,7 +118,7 @@ class Tamagotchi:
             :param save: a user saved game
         """
         if not save:
-            self.character = Demogordan2()
+            self.character = Demogordan()
         else:
             self.current_save = save
             self.character = self.characters_collection[self.current_save.evolution]()
@@ -124,6 +126,7 @@ class Tamagotchi:
             self.character.coins = self.current_save.coins
             self.character.level = self.current_save.level
             self.character.inventory = self.current_save.inventory
+
         self.animate = animator.Animator(self.character.skeleton, self.event_thread)
         threading.Thread(target=self.reduce_params, daemon=True).start()
 
@@ -170,10 +173,17 @@ class Tamagotchi:
     def update_state(self, state):
         """updating game state"""
         if state == GameState.MAIN:
+
             if not self.is_muted:
                 misc.sound.music(True)
-            # issue todo bug while btn dance still visible after shop
-            self.screen = MainGame(self.screen.win, self)
+            if self.temp_game_progress:
+                self.screen = self.temp_game_progress
+
+                self.screen.refresh_items()
+
+            else:
+                self.temp_game_progress = self.screen = MainGame(self.screen.win, self)
+
         elif state == GameState.MENU:
             self.screen = MainMenu(self.screen.win, self)
         elif state == GameState.SHOP:

@@ -55,7 +55,7 @@ class Animator:
                 y += 20
                 i = 1
                 continue
-            print(c)
+
             time.sleep(0.02)
             print_text_to_screen(c, win, x=130 + (i * 9),
                                  y=y, size=20, color=RGBColors.GREEN.value, vertical=False)
@@ -122,7 +122,7 @@ class Animator:
         :param size: size of each pixel (_rect)
         :return:
         """
-        print(threading.current_thread().name)
+
 
         if sep:
             target = win

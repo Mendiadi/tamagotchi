@@ -18,32 +18,20 @@ class MainGame(Screen):
     def __init__(self, win, tamagochi):
         super().__init__(win, tamagochi)
 
-        images = self.game.images
+        self.images = self.game.images
         # init bg
-        self.background = images['bg']
-
-
-
+        self.background = self.images['bg']
 
         # init buttons
-        self.button_food = Button((300, 535), image=   images['food'],
-                                  width=   images['food'].get_width(), height=   images['food'].get_height(),
-                                  txt=str(len(self.game.character.inventory['pizza'])), font_size=18
-                                  )
-        self.button_food.set_onclick_function(lambda: self.change_amount_food(self.button_food,
-                                                                              self.game.shop['pizza']))
-        self.drink_button = Button((350, 535), image=  images['drink'],
-                                   width=  images['drink'].get_width(), height=images['drink'].get_height(),
-                                   txt=str(len(self.game.character.inventory['drink'])), font_size=18)
-        self.drink_button.set_onclick_function(lambda: self.change_amount_food(self.drink_button,
-                                                                               self.game.shop['drink']))
+        self.button_food = None
+        self.drink_button = None
         self.btn_flip = Button((10, 10), RGBColors.SKIN_COLOR, "flip", font_color=RGBColors.BLACK)
         self.btn_sleep = Button((200, 10), RGBColors.SKIN_COLOR, "sleep", font_color=RGBColors.BLACK)
         self.btn_animation = Button((550, 10), RGBColors.SKIN_COLOR, "dance", font_color=RGBColors.BLACK)
         self.grow_up_btn = Button((700, 10), RGBColors.SKIN_COLOR, "grow", font_color=RGBColors.BLACK)
         self.back_btn = Button((400, 10), RGBColors.SKIN_COLOR, "back", font_color=RGBColors.BLACK)
-        self.shop_btn = Button((300, 10), RGBColors.SKIN_COLOR, image=images['shop_btn'],
-                               txt="shop",font_size=15)
+        self.shop_btn = Button((300, 10), RGBColors.SKIN_COLOR, image=self.images['shop_btn'],
+                               txt="shop", font_size=15)
 
         # set onclick methods
 
@@ -53,15 +41,34 @@ class MainGame(Screen):
         self.btn_flip.set_onclick_function(self.make_flip)
         self.btn_sleep.set_onclick_function(self.sleep)
         self.btn_animation.set_onclick_function(self.dance)
+        self.load_items()
         self.buttons = (self.btn_flip, self.btn_sleep, self.grow_up_btn,
                         self.btn_animation, self.back_btn, self.button_food,
                         self.drink_button, self.shop_btn)
 
         self._is_start = False
 
+    def load_items(self):
+        self.button_food = Button((300, 535), image=self.images['food'],
+                                  width=self.images['food'].get_width(), height=self.images['food'].get_height(),
+                                  txt=str(len(self.game.character.inventory['pizza'])), font_size=18
+                                  )
+        self.button_food.set_onclick_function(lambda: self.change_amount_food(self.button_food,
+                                                                              self.game.shop['pizza']))
+        self.drink_button = Button((350, 535), image=self.images['drink'],
+                                   width=self.images['drink'].get_width(), height=self.images['drink'].get_height(),
+                                   txt=str(len(self.game.character.inventory['drink'])), font_size=18)
+        self.drink_button.set_onclick_function(lambda: self.change_amount_food(self.drink_button,
+                                                                               self.game.shop['drink']))
+
     @misc.sound.button
     def _on_shop(self):
+        self.game.temp_game_progress = self.game.screen
         self.game.update_state(GameState.SHOP)
+
+    def refresh_items(self):
+        self.button_food.txt = str(len(self.game.character.inventory['pizza']))
+        self.drink_button.txt = str(len(self.game.character.inventory['drink']))
 
     def change_amount_food(self, btn, food):
         self.game.character.eat(food)
@@ -73,17 +80,17 @@ class MainGame(Screen):
         """
 
         print_text_to_screen(f"health: {self.game.character.life_bar}%",
-                             self.win, 150, 200,color=RGBColors.GREEN.value,
-                             vertical=False,size=16)
+                             self.win, 150, 200, color=RGBColors.GREEN.value,
+                             vertical=False, size=16)
         print_text_to_screen(f"hanger: {self.game.character.food_bar}%",
-                             self.win, 250, 200,color=RGBColors.GREEN.value,
-                             vertical=False,size=16)
+                             self.win, 250, 200, color=RGBColors.GREEN.value,
+                             vertical=False, size=16)
         print_text_to_screen(f"energy: {self.game.character.energy}%",
-                             self.win, 350, 200,color=RGBColors.GREEN.value,
-                             vertical=False,size=16)
+                             self.win, 350, 200, color=RGBColors.GREEN.value,
+                             vertical=False, size=16)
         print_text_to_screen(f"happy: {self.game.character.happy}%",
-                             self.win, 450, 200,color=RGBColors.GREEN.value,
-                             vertical=False,size=16)
+                             self.win, 450, 200, color=RGBColors.GREEN.value,
+                             vertical=False, size=16)
         print_text_to_screen(f"EVOLUTION RATE: {int(self.game.character.level)}%",
                              self.win, 300, 640)
         print_text_to_screen(f"Coins: {int(self.game.character.coins)}",
@@ -132,7 +139,7 @@ class MainGame(Screen):
         :param event: pygame _event
 
         """
-        print("moshe")
+
         if self.game.is_paused:
             return
         for button in self.buttons:
@@ -147,7 +154,7 @@ class MainGame(Screen):
         perform dancing
 
         """
-        if self.game.is_freezed:
+        if self.game.is_freezed or self.btn_animation.is_hide:
             return
         self.game.freeze_auto_reducing(self.btn_animation)
         self.game.animate.compile(self.game.character.skeleton)
