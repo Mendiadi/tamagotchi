@@ -5,10 +5,11 @@ from commons import misc
 from .screen import Screen
 from entities import Button
 from commons.utils import (
-        RGBColors,
-        GameState,
-        print_text_to_screen
+    RGBColors,
+    GameState,
+    print_text_to_screen
 )
+
 
 class ShopScreen(Screen):
     def __init__(self, win, tamagochi):
@@ -31,22 +32,23 @@ class ShopScreen(Screen):
         self.back_btn = Button((400, 10), RGBColors.SKIN_COLOR, "back", font_color=RGBColors.BLACK)
         self.back_btn.set_onclick_function(self._on_leave)
         self.buttons = (self.drink_button, self.button_food, self.back_btn)
+
     @misc.sound.button
     def _on_leave(self):
         self.game.update_state(GameState.MAIN)
 
     def render(self):
         self.win.fill(RGBColors.BLACK.value)
-        self.win.blit(self.background,(0,0))
+        self.win.blit(self.background, (0, 0))
         for btn in self.buttons:
             btn.draw(self.win)
-        print_text_to_screen("SHOP", self.win, 100, 100,color=RGBColors.WHITE.value)
+        print_text_to_screen("SHOP", self.win, 100, 100, color=RGBColors.WHITE.value)
         print_text_to_screen(f"your coins : {self.game.character.points}",
-                             self.win, 300, 100,color=RGBColors.WHITE.value)
+                             self.win, 300, 100, color=RGBColors.WHITE.value)
         print_text_to_screen(f"pizza price : {self.game.shop['pizza'].price}",
-                             self.win, 270, 240,size=15,vertical=False,color=RGBColors.WHITE.value)
+                             self.win, 270, 240, size=15, vertical=False, color=RGBColors.WHITE.value)
         print_text_to_screen(f"drink price : {self.game.shop['drink'].price}",
-                             self.win, 400, 240,size=15,vertical=False,color=RGBColors.WHITE.value)
+                             self.win, 400, 240, size=15, vertical=False, color=RGBColors.WHITE.value)
         pygame.display.flip()
 
     def update(self, delta_t, event):

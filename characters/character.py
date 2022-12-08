@@ -23,6 +23,7 @@ class Character:
     def buy(self, food):
         if food.price > self.points:
             return
+        sound.buy()
         self.inventory[food.name].append(food)
         self.points -= food.price
 
@@ -44,8 +45,7 @@ class Character:
         self.energy = 50
         self.food_bar = 50
 
-
-    def set_flip(self,active) -> bool:
+    def set_flip(self, active) -> bool:
         if active:
             return False
         if self.energy < 5:
@@ -60,7 +60,7 @@ class Character:
             self.happy = 100
         return True
 
-    def set_sleep(self,active):
+    def set_sleep(self, active):
         """
         update the stats of character
         calls from the button only if animation not active
@@ -77,7 +77,6 @@ class Character:
         if self.energy > 100:
             self.energy = 100
 
-    @sound.eat
     def eat(self, food__):
         food_count = self.inventory[food__.name]
         if not food_count:
@@ -85,24 +84,18 @@ class Character:
         if self.energy < 1:
             return
         food = food_count.pop()
-
         self.food_bar += food.rate
         if self.food_bar > 100:
             self.food_bar = 100
         self.happy += 2
         if self.happy > 100:
             self.happy = 100
-
         self.life_bar += 1
         self.energy -= 1
+        sound.eat()
 
     def add_life(self, ratio):
         ...
 
     def reduce_life(self, ratio):
         ...
-
-
-
-
-

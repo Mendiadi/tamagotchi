@@ -1,12 +1,17 @@
 import tkinter
-
 import pygame
 import os
 from tkinter import messagebox
 
+
 import game
 
+
 def verify_files():
+    """
+    verify that all the assets files exists.
+    :return: true if present otherwise false
+    """
     if os.getcwd()[::-1][:9:][::-1] != "tamagutsi":
         os.chdir("tamagutsi")
     if "assets" not in os.listdir():
@@ -18,14 +23,12 @@ def verify_files():
     if "sounds" not in assets_dirs:
         return False, "sounds"
     for img in os.listdir("assets/images"):
-        if img[:-4:] not in ("food","drink","bg","shop"):
-
+        if img[:-4:] not in ("food", "drink", "bg", "shop","shop_btn"):
             return False, img
     for sound in os.listdir("assets/sounds"):
-        if sound[:-4:] not in ("button_sound_1","music_bg","eat"):
-            return False,sound
-    return True,None
-
+        if sound[:-4:] not in ("button_sound_1", "music_bg", "eat", "buy"):
+            return False, sound
+    return True, None
 
 
 def main():
@@ -34,7 +37,7 @@ def main():
         root = tkinter.Tk()
         root.withdraw()
         messagebox.showerror(title="TAMAGOCHI ERROR",
-        message=f"Error Cannot find {info} in game files\nplease reinstall the game")
+                             message=f"Error Cannot find {info} in game files\nplease reinstall the game")
         root.destroy()
         return
     pygame.init()
@@ -45,7 +48,6 @@ def main():
 
 
 if __name__ == '__main__':
-    print(os.getcwd())
+
+
     main()
-
-

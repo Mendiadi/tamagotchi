@@ -1,15 +1,14 @@
 import pygame
 
-
 from commons.utils import RGBColors
 from .entity import Entity
-
 
 
 class Clickable(Entity):
     """
     clickable is an entity that can clicked
     """
+
     def __init__(self, pos: tuple[int, int], color: RGBColors, width: [float, int] = 50,
                  height: [float, int] = 110):
         super().__init__(pos, color, width, height)
@@ -17,10 +16,8 @@ class Clickable(Entity):
         self.onclick_function_args = None
         self.is_clicked = False
 
-
     def onrelease(self):
         self.is_clicked = False
-
 
     def onclick(self):
         self.is_clicked = True
@@ -28,7 +25,7 @@ class Clickable(Entity):
             self.onclick_function(*self.onclick_function_args)
         self.onclick_function()
 
-    def event(self,event):
+    def event(self, event):
 
         if not event:
             return

@@ -4,8 +4,7 @@ import pygame
 import time
 import numpy as np
 
-
-from commons.utils import RGBColors,print_text_to_screen
+from commons.utils import RGBColors, print_text_to_screen
 
 
 class Animator:
@@ -14,7 +13,7 @@ class Animator:
     of the main character
     """
 
-    def __init__(self, board,event_thread):
+    def __init__(self, board, event_thread):
         self._inverted = False
         self._rate = None
         self._board = board
@@ -26,32 +25,31 @@ class Animator:
 
         }
         self._exec = None
-        self.init_rect_pos = (180, 190)
-        self._active = False
+        self._init_rect_pos = (180, 190)
+        self.active = False
         self.ready = False
         self.surface = pygame.Surface((450, 350))
-        self.rect = self.surface.get_rect()
-        self.rect.x, self.rect.y = self.init_rect_pos
-        self.event = event_thread
-        self.animate_x = self.rect.x
-        self.need_to_move_surface = False
-        self.birth = False #todo set build False
-
+        self._rect = self.surface.get_rect()
+        self._rect.x, self._rect.y = self._init_rect_pos
+        self._event = event_thread
+        self._animate_x = self._rect.x
+        self.birth = False  # todo set build False
+        self._need_to_move_surface = False
         threading.Thread(target=self.move_sub_surface, daemon=True, name="move_surface").start()
 
     # **************** Animations ******************************
 
-    def _start_animation(self,win):
+    def _start_animation(self, win):
 
-        self._active = True
-        cmd = "for ( int i = 0; i < count; i++ ) % {%"  \
+        self.active = True
+        cmd = "for ( int i = 0; i < count; i++ ) % {%" \
               "    if ( td4 != 0 || td4 >= x )%" \
               "        return success_building_your_pet;%" \
               "    else%" \
               "        return 0;% }"
         y = 200
         i = 0
-        for  c in (cmd):
+        for c in (cmd):
             i += 1
             if c == "%":
                 y += 20
@@ -59,24 +57,23 @@ class Animator:
                 continue
             print(c)
             time.sleep(0.02)
-            print_text_to_screen(c, win, x=130 + (i*9),
+            print_text_to_screen(c, win, x=130 + (i * 9),
                                  y=y, size=20, color=RGBColors.GREEN.value, vertical=False)
         time.sleep(2)
 
-        sep=True
-        size=20
-        pad=10
-        angel=12
+        sep = True
+        size = 20
+        pad = 10
+        angel = 12
 
-        self.render(win,pad+7,angel+6,size,sep)
+        self.render(win, pad + 7, angel + 6, size, sep)
         self.birth = True
         self.stop()
 
-
-    def render_starting_animation(self,win):
-        if not self._active:
+    def render_starting_animation(self, win):
+        if not self.active:
             threading.Thread(target=self._start_animation,
-                             daemon=True,args=(win,),name="code").start()
+                             daemon=True, args=(win,), name="code").start()
 
     def move_sub_surface(self):
         """
@@ -85,17 +82,15 @@ class Animator:
         :return:
         """
         while 1:
-            self.event.wait()
-            if not self.need_to_move_surface:
+            self._event.wait()
+            if not self._need_to_move_surface:
                 continue
             for i in range(5):
                 time.sleep(0.5)
-                self._move_surface(self.animate_x - (i * 3), self.rect.y)
+                self._move_surface(self._animate_x - (i * 3), self._rect.y)
             for i in range(5):
                 time.sleep(0.5)
-                self._move_surface(self.animate_x + (i * 3), self.rect.y)
-
-
+                self._move_surface(self._animate_x + (i * 3), self._rect.y)
 
     def animation_1(self):
         """
@@ -106,7 +101,7 @@ class Animator:
         end = 0
         max_time = 10
         while end - start < max_time:
-            self.event.wait()
+            self._event.wait()
             self._move_legs(["left", "right", "l_init", "r_init"])
             self._invert()
             self._move_legs(["left", "right", "l_init", "r_init"])
@@ -118,13 +113,13 @@ class Animator:
 
     # *********************** Operations Methods **************************
 
-    def render(self, win, pad=30, angel=4.5, size=45,sep=False):
+    def render(self, win, pad=30, angel=4.5, size=45, sep=False):
         """
         render the matrix to the target surface
         :param win: surface
         :param pad: number to know how much distance between pixels
         :param angel: number to figure out position to render
-        :param size: size of each pixel (rect)
+        :param size: size of each pixel (_rect)
         :return:
         """
         print(threading.current_thread().name)
@@ -134,7 +129,7 @@ class Animator:
 
         else:
             target = self.surface
-            win.blit(target, (self.rect.x, self.rect.y))
+            win.blit(target, (self._rect.x, self._rect.y))
             target.fill(RGBColors.BLACK.value)
         for i in range(10):
             for j in range(10):
@@ -199,8 +194,8 @@ class Animator:
         stopping the animation
         :return:
         """
-        self.event.clear()
-        self._active = False
+        self._event.clear()
+        self.active = False
         self.ready = False
 
     def __call__(self, rate, *args, **kwargs):
@@ -214,10 +209,10 @@ class Animator:
         :return:
         """
         self._rate = rate
-        if not self._active and self.ready:
-            threading.Thread(target=self._exec, daemon=True,name="animation").start()
-            self._active = True
-            self.event.set()
+        if not self.active and self.ready:
+            threading.Thread(target=self._exec, daemon=True, name="animation").start()
+            self.active = True
+            self._event.set()
 
     # ************************* MISC MOVES *******************************
 
@@ -265,7 +260,7 @@ class Animator:
         perform dead
         :return:
         """
-        self.event.clear()
+        self._event.clear()
         time.sleep(self._rate)
         if self._inverted:
             self._inverted = False
@@ -295,5 +290,5 @@ class Animator:
         :param y:
         :return:
         """
-        self.rect.x = x
-        self.rect.y = y
+        self._rect.x = x
+        self._rect.y = y
