@@ -119,7 +119,7 @@ class Tamagotchi:
             self.character = Demogordan2()
         else:
             self.current_save = save
-            self.character = self.characters_collection[self.current_save.evolution]
+            self.character = self.characters_collection[self.current_save.evolution]()
             self.evolution = self.current_save.evolution
             self.character.coins = self.current_save.coins
             self.character.level = self.current_save.level

@@ -58,7 +58,7 @@ class MainMenu(Screen):
         buttons = []
         if saves:
             for i,save in enumerate(saves):
-                btn = Button((300, 200 + ((10+i) * 10)), RGBColors.BLACK, save.name)
+                btn = Button((300, 200 + ((1+i) * 50)), RGBColors.BLACK, save.name)
                 btn.set_onclick_function(lambda :self._on_leave(save))
                 buttons.append(btn)
         buttons.append(self.back_load_btn)
