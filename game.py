@@ -29,7 +29,13 @@ class Tamagotchi:
     FPS = 60
 
     def __init__(self):
-        self.characters_collection = {}
+        self.characters_collection = {  1:Demogordan,
+                                        2:Demogordan2,
+                                        3:Demogordan3,
+                                        4:Demogordan4,
+                                        5:Demogordan5,
+                                        6:Demogordan6,
+                                        7:Demogordan7}
         self.character = None
         self.event_thread = threading.Event()
         self.animate = None
@@ -40,15 +46,19 @@ class Tamagotchi:
         self.images = None
         self.shop = {"pizza": Pizza(), "drink": Drink()}
         self.is_muted = False
-        self.evolution = None
+        self.evolution = None # means demogordan upgrade
         self.is_freezed = False
         self.current_save = None
-        self.main_game = None
+
+
+    def reset(self):...
 
     def reduce_params(self):
         """REDUCING VALUES BY X TIME RUNS IN THREAD"""
         time.sleep(5)
         start = time.time()
+        freeze_start = 0
+        freeze_end = 0
         end = 0
         while True:
 
@@ -56,6 +66,14 @@ class Tamagotchi:
             if self.is_paused:
                 continue
             if self.is_freezed:
+                if freeze_end - freeze_start >= 10:
+                    self.is_freezed = False
+                    freeze_start = 0
+                    freeze_end = 0
+                    continue
+                if not freeze_start:
+                    freeze_start = time.time()
+                freeze_end = time.time()
                 continue
             if self.character.food_bar > 0:
                 self.character.food_bar -= 2
@@ -83,10 +101,9 @@ class Tamagotchi:
         btn_dance.hide()
         self.is_freezed = True
         def unfreezed():
-            self.is_freezed = False
             btn_dance.show()
             timer.cancel()
-        timer = threading.Timer(10,unfreezed)
+        timer = threading.Timer(90,unfreezed)
         timer.setDaemon(True)
         timer.start()
 
@@ -102,11 +119,9 @@ class Tamagotchi:
             self.character = Demogordan2()
         else:
             self.current_save = save
-            if self.current_save.evolution == 1:
-                # todo need to make this more clean ro provide witch character to load
-                self.character = Demogordan()
+            self.character = self.characters_collection[self.current_save.evolution]
             self.evolution = self.current_save.evolution
-            self.character.points = self.current_save.coins
+            self.character.coins = self.current_save.coins
             self.character.level = self.current_save.level
             self.character.inventory = self.current_save.inventory
         self.animate = animator.Animator(self.character.skeleton, self.event_thread)
@@ -157,10 +172,8 @@ class Tamagotchi:
         if state == GameState.MAIN:
             if not self.is_muted:
                 misc.sound.music(True)
-            if self.main_game:
-                self.screen = self.main_game
-            else:
-                self.main_game = self.screen = MainGame(self.screen.win, self)
+            # issue todo bug while btn dance still visible after shop
+            self.screen = MainGame(self.screen.win, self)
         elif state == GameState.MENU:
             self.screen = MainMenu(self.screen.win, self)
         elif state == GameState.SHOP:

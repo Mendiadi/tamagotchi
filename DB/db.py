@@ -2,7 +2,7 @@ import dataclasses
 import json
 import sqlite3
 
-from characters.character import Character
+
 
 @dataclasses.dataclass
 class SaveProgress:
@@ -61,9 +61,27 @@ class DB:
         db.close()
 
     def get_save(self,save):
-        ...
+        db = sqlite3.connect("../tamagochi.db")
+        cursor = db.cursor()
+        cursor.execute(f"select from game_saves where id = {save.id} and name = {save.name};")
+        db.commit()
+        data = cursor.fetchone()
+        cursor.close()
+        db.close()
+        return data
 
-    def update_save(self,save):...
+    def update_save(self,save):
+        db = sqlite3.connect("../tamagochi.db")
+        cursor = db.cursor()
+        col, vals =  save.pack()
+        res = []
+        for i in range(len(col)):
+            res.append(f"{col} = {vals}")
+        cursor.execute(f"update table game_saves ({','.join(res)});")
+        db.commit()
+        cursor.close()
+        db.close()
+
 
     def get_all_saves(self):
         db = sqlite3.connect("../tamagochi.db")

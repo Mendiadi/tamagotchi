@@ -43,7 +43,7 @@ class ShopScreen(Screen):
         for btn in self.buttons:
             btn.draw(self.win)
         print_text_to_screen("SHOP", self.win, 100, 100, color=RGBColors.WHITE.value)
-        print_text_to_screen(f"your coins : {self.game.character.points}",
+        print_text_to_screen(f"your coins : {self.game.character.coins}",
                              self.win, 300, 100, color=RGBColors.WHITE.value)
         print_text_to_screen(f"pizza price : {self.game.shop['pizza'].price}",
                              self.win, 270, 240, size=15, vertical=False, color=RGBColors.WHITE.value)

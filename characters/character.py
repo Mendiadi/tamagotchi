@@ -15,17 +15,17 @@ class Character:
         self.happy = 100
         self.age = 20
         self.angel = None
-        self.level = 0
-        self.points = 100
+        self.level = 0 # means grow up rate
+        self.coins = 100
         self.inventory = {"pizza": [], "drink": []}
         self.energy = 50
 
     def buy(self, food):
-        if food.price > self.points:
+        if food.price > self.coins:
             return
         sound.buy()
         self.inventory[food.name].append(food)
-        self.points -= food.price
+        self.coins -= food.price
 
     def grow_up(self):
         """
@@ -54,7 +54,7 @@ class Character:
             return False
         self.energy -= 5
         self.food_bar -= 1
-        self.points += 10
+        self.coins += 10
         self.happy += 2
         if self.happy > 100:
             self.happy = 100
@@ -70,7 +70,7 @@ class Character:
         if active:
             return
         self.happy += 2
-        self.points += 5
+        self.coins += 5
         self.energy += 20
         if self.happy > 100:
             self.happy = 100

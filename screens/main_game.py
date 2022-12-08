@@ -86,7 +86,7 @@ class MainGame(Screen):
                              vertical=False,size=16)
         print_text_to_screen(f"EVOLUTION RATE: {int(self.game.character.level)}%",
                              self.win, 300, 640)
-        print_text_to_screen(f"Coins: {int(self.game.character.points)}",
+        print_text_to_screen(f"Coins: {int(self.game.character.coins)}",
                              self.win, 500, 600)
         if self.game.is_paused:
             print_text_to_screen("PAUSED (ESC) to cancel",
@@ -121,6 +121,8 @@ class MainGame(Screen):
     def _on_leave(self):
         # todo  saves records
         self.game.update_state(GameState.MENU)
+        self.game.save()
+        self.game.reset()
 
     def update(self, delta_t, event):
         """
