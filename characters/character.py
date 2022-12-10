@@ -20,6 +20,9 @@ class Character:
         self.inventory = {"pizza": [], "drink": []}
         self.energy = 50
 
+    def init_positions(self):
+        self.angel = self.rate[self.age]
+
     def buy(self, food):
         if food.price > self.coins:
             return
@@ -36,7 +39,7 @@ class Character:
         if not (self.food_bar == 100 and self.happy == 100 and self.energy == 100):
             return
         if self.age == 50:
-            return
+            return 1
         self.age += 5
         self.angel = self.rate[self.age]
         self.level += 16.6666

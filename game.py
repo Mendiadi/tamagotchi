@@ -1,3 +1,4 @@
+import datetime
 import threading
 import time
 import pygame
@@ -21,7 +22,7 @@ from screens import (
     SplashScreen,
     ShopScreen
 )
-from DB.db import DB
+from DB.db import DB,SaveProgress
 
 
 class Tamagotchi:
@@ -30,13 +31,13 @@ class Tamagotchi:
 
     def __init__(self):
 
-        self.characters_collection = {  1:Demogordan,
-                                        2:Demogordan2,
-                                        3:Demogordan3,
-                                        4:Demogordan4,
-                                        5:Demogordan5,
-                                        6:Demogordan6,
-                                        7:Demogordan7}
+        self.characters_collection = {  0:Demogordan,
+                                        1:Demogordan2,
+                                        2:Demogordan3,
+                                       3:Demogordan4,
+                                       4:Demogordan5,
+                                        5:Demogordan6,
+                                        6:Demogordan7}
         self.character = None
         self.event_thread = threading.Event()
         self.animate = None
@@ -50,7 +51,7 @@ class Tamagotchi:
         self.evolution = 0 # means demogordan upgrade
         self.is_freezed = False
         self.current_save = None
-        self.temp_game_progress = None # saves the progress of running game
+        self.temp_game_progress = None # saves the progress of running game todo make its point to save model class
 
 
     def reset(self):...
@@ -117,20 +118,40 @@ class Tamagotchi:
             save data otherwise it will start new game
             :param save: a user saved game
         """
+
         if not save:
+
             self.character = Demogordan()
+            self.current_save = SaveProgress(None, self.character.age
+                                             , self.evolution, self.character.coins,
+                                             self.character.inventory,
+                                             datetime.datetime.now().ctime(), "my new2")
+
         else:
+            new_dict = {}
+            for item, amount in save.inventory.items():
+
+                if item == "pizza":
+                    items = [Pizza() for _ in range(amount)]
+                else:
+                    items = [Drink() for _ in range(amount)]
+                new_dict[item] = items
+            save.inventory = new_dict
             self.current_save = save
+
             self.character = self.characters_collection[self.current_save.evolution]()
             self.evolution = self.current_save.evolution
             self.character.coins = self.current_save.coins
-            self.character.level = self.current_save.level
-            self.character.inventory = self.current_save.inventory
+            self.character.age = self.current_save.level
 
+            self.character.inventory = self.current_save.inventory
+            self.character.init_positions()
+            print(self.current_save)
+            print(self.character.inventory)
         self.animate = animator.Animator(self.character.skeleton, self.event_thread)
         threading.Thread(target=self.reduce_params, daemon=True).start()
 
-    def change_evolution(self, evo):
+    def change_evolution(self):
         """
         Change the evolution to the given one
         save the progress and start new level
@@ -138,8 +159,10 @@ class Tamagotchi:
         :return:
         """
         #todo make character collections and implement level up
-        self.character = self.characters_collection[evo]
+        self.evolution += 1
+        self.character = self.characters_collection[self.evolution]()
         self.save()
+        self.reset()
         self.start_game()
 
     def save(self):
@@ -149,11 +172,17 @@ class Tamagotchi:
         if save already in it will update it
         :return:
         """
+        print(self.current_save)
+        self.current_save.inventory = self.character.inventory
+        self.current_save.level = self.character.age
+        self.current_save.evolution = self.evolution
+        self.current_save.coins = self.character.coins
         save = self.db.get_save(self.current_save)
         if not save:
             self.db.add_save(self.current_save)
         else:
             # change save
+            print(f"[update save] {save}")
             self.db.update_save(self.current_save)
 
 

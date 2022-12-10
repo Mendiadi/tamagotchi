@@ -37,7 +37,7 @@ class MainGame(Screen):
 
         self.shop_btn.set_onclick_function(self._on_shop)
         self.back_btn.set_onclick_function(self._on_leave)
-        self.grow_up_btn.set_onclick_function(self.game.character.grow_up)
+        self.grow_up_btn.set_onclick_function(self.grow_up)
         self.btn_flip.set_onclick_function(self.make_flip)
         self.btn_sleep.set_onclick_function(self.sleep)
         self.btn_animation.set_onclick_function(self.dance)
@@ -47,6 +47,11 @@ class MainGame(Screen):
                         self.drink_button, self.shop_btn)
 
         self._is_start = False
+
+    def grow_up(self):
+        code = self.game.character.grow_up()
+        if code == 1:
+            self.game.change_evolution()
 
     def load_items(self):
         self.button_food = Button((300, 535), image=self.images['food'],

@@ -19,10 +19,14 @@ class SaveProgress:
         cols = []
         values = []
         for key,val in self.__dict__.items():
-            if key == "id":
+            if key == "id" or key == "name":
                 continue
+
             if key == "inventory":
-                val = json.dumps(val)
+                d = {}
+                for k,v in self.inventory.items():
+                    d[k] = len(v)
+                val = json.dumps(d)
             cols.append(key)
             values.append(f"\'{str(val)}\'")
         print(cols,values)
@@ -67,7 +71,8 @@ class DB:
             return
         db = sqlite3.connect("../tamagochi.db")
         cursor = db.cursor()
-        cursor.execute(f"select from game_saves where id = {save.id} and name = {save.name};")
+        print(f"select * from game_saves where id = {save.id} and name = {save.name};")
+        cursor.execute(f"select * from game_saves where name = \"{save.name}\";")
         db.commit()
         data = cursor.fetchone()
         cursor.close()
@@ -80,8 +85,9 @@ class DB:
         col, vals =  save.pack()
         res = []
         for i in range(len(col)):
-            res.append(f"{col} = {vals}")
-        cursor.execute(f"update table game_saves ({','.join(res)});")
+            res.append(f"{col[i]} = {vals[i]}")
+        print(f"update game_saves set ({','.join(res)}) where name = \"{save.name}\";")
+        cursor.execute(f"update game_saves set {','.join(res)} where name = \"{save.name}\";")
         db.commit()
         cursor.close()
         db.close()
@@ -93,9 +99,14 @@ class DB:
         cursor.execute(f"select * from game_saves;")
 
         saves = []
-        for data in cursor.fetchall():
+        d = cursor.fetchall()
+
+        for data in d:
              saves .append(SaveProgress(data[0],data[1],data[2],data[3],
                             json.loads(data[4]),data[5],data[6]))
+
+
+
         cursor.close()
         db.close()
         return saves
