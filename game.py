@@ -52,9 +52,12 @@ class Tamagotchi:
         self.is_freezed = False
         self.current_save = None
         self.temp_game_progress = None # saves the progress of running game todo make its point to save model class
+        self.in_game = False
 
+    def reset(self):
+        self.temp_game_progress = None
+        self.in_game = False
 
-    def reset(self):...
 
     def reduce_params(self):
         """REDUCING VALUES BY X TIME RUNS IN THREAD"""
@@ -63,7 +66,7 @@ class Tamagotchi:
         freeze_start = 0
         freeze_end = 0
         end = 0
-        while True:
+        while self.in_game:
 
             time.sleep(5)
             if self.is_paused:
@@ -148,6 +151,7 @@ class Tamagotchi:
             self.character.init_positions()
             print(self.current_save)
             print(self.character.inventory)
+        self.in_game = True
         self.animate = animator.Animator(self.character.skeleton, self.event_thread)
         threading.Thread(target=self.reduce_params, daemon=True).start()
 
@@ -214,6 +218,8 @@ class Tamagotchi:
                 self.temp_game_progress = self.screen = MainGame(self.screen.win, self)
 
         elif state == GameState.MENU:
+            self.reset()
+
             self.screen = MainMenu(self.screen.win, self)
         elif state == GameState.SHOP:
             self.screen = ShopScreen(self.screen.win, self)

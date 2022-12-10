@@ -44,12 +44,12 @@ class MainMenu(Screen):
         self.back_about_btn = Button((300, 200), RGBColors.BLACK, "back")
         self.back_about_btn.set_onclick_function(self._on_main)
         self.buttons_about = (self.back_about_btn,)
-
+        self.saves_buttons = self._create_saves_buttons()
         self._states = {
             "main": (self.buttons, "THIS IS MAIN MENU"),
             "options": (self.option_buttons, "OPTIONS"),
             "about": (self.buttons_about, "ABOUT"),
-            "load":(self._create_saves_buttons(),"LOAD SAVES")
+            "load":(self.saves_buttons,"LOAD SAVES")
         }
 
     def _create_saves_buttons(self):
@@ -62,6 +62,7 @@ class MainMenu(Screen):
                 btn.set_onclick_function(lambda :self._on_leave(save))
                 buttons.append(btn)
         buttons.append(self.back_load_btn)
+
         print(buttons)
         return buttons
 
@@ -99,9 +100,14 @@ class MainMenu(Screen):
     @misc.sound.button
     def _on_leave(self,save=None):
 
+        if len(self.saves_buttons) == 6 and not save:
+            self.start_btn.hide()
+            return
         self.game.start_game(save)
-
         self.game.update_state(GameState.MAIN)
+
+
+
 
     @misc.sound.button
     def _on_options(self):
