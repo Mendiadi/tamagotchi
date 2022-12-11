@@ -5,14 +5,13 @@ pygame.mixer.init()
 
 
 def load_images():
-    suface = pygame.Surface((48,48))
-    suface.fill("white")
     _images_collection = {}
     _images_collection["bg"] = pygame.image.load("assets/images/bg.png").convert()
     _images_collection["drink"] = pygame.image.load("assets/images/drink.png").convert()
     _images_collection["food"] = pygame.image.load("assets/images/food.png").convert()
     _images_collection['shop'] = pygame.image.load("assets/images/shop.jpg").convert()
-    _images_collection["shop_btn"] = pygame.image.load("assets/images/shop_btn.png").convert(suface)
+    _images_collection["shop_btn"] = pygame.image.load("assets/images/shop_btn.png").convert()
+    _images_collection['medic'] = pygame.image.load("assets/images/medic.png").convert()
     return _images_collection
 
 

@@ -17,7 +17,7 @@ class Character:
         self.angel = None
         self.level = 0 # means grow up rate
         self.coins = 100
-        self.inventory = {"pizza": [], "drink": []}
+        self.inventory = {"pizza": [], "drink": [],"medic":[]}
         self.energy = 50
 
     def init_positions(self):
@@ -82,7 +82,7 @@ class Character:
 
     def eat(self, food__):
         food_count = self.inventory[food__.name]
-        if not food_count:
+        if not food_count or self.food_bar == 100:
             return
         if self.energy < 1:
             return
@@ -93,12 +93,16 @@ class Character:
         self.happy += 2
         if self.happy > 100:
             self.happy = 100
-        self.life_bar += 1
         self.energy -= 1
         sound.eat()
 
-    def add_life(self, ratio):
-        ...
+    def add_life(self, item):
+        medicine = self.inventory[item.name]
+        if not medicine or self.life_bar == 100:
+            return
 
-    def reduce_life(self, ratio):
-        ...
+        medic = medicine.pop()
+        self.life_bar += medic.rate
+        if self.life_bar > 100:
+            self.life_bar = 100
+

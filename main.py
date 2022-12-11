@@ -3,7 +3,7 @@ import pygame
 import os
 from tkinter import messagebox
 
-
+import DB.db
 import game
 
 
@@ -23,7 +23,7 @@ def verify_files():
     if "sounds" not in assets_dirs:
         return False, "sounds"
     for img in os.listdir("assets/images"):
-        if img[:-4:] not in ("food", "drink", "bg", "shop","shop_btn"):
+        if img[:-4:] not in ("food", "drink", "bg", "shop","shop_btn","medic"):
             return False, img
     for sound in os.listdir("assets/sounds"):
         if sound[:-4:] not in ("button_sound_1", "music_bg", "eat", "buy"):
@@ -48,6 +48,4 @@ def main():
 
 
 if __name__ == '__main__':
-
-
     main()

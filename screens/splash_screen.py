@@ -27,7 +27,7 @@ class SplashScreen(Screen):
 
     def render(self):
         self.win.fill(RGBColors.WHITE.value)
-        print_text_to_screen("THIS IS SPLASH SCREEN", self.win, 100, 100)
+        print_text_to_screen("TAMAGOCHI", self.win, 100, 100)
         pygame.display.flip()
 
     def update(self, delta_t, event): ...

@@ -19,7 +19,7 @@ class SaveProgress:
         cols = []
         values = []
         for key,val in self.__dict__.items():
-            if key == "id" or key == "name":
+            if key == "id" :
                 continue
 
             if key == "inventory":
@@ -110,3 +110,6 @@ class DB:
         cursor.close()
         db.close()
         return saves
+
+
+

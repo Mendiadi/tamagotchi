@@ -35,6 +35,7 @@ class Animator:
         self._animate_x = self._rect.x
         self.birth = False  # todo set build False
         self._need_to_move_surface = False
+        self.run = True
         threading.Thread(target=self.move_sub_surface, daemon=True, name="move_surface").start()
 
     # **************** Animations ******************************
@@ -81,7 +82,7 @@ class Animator:
         runs in thread
         :return:
         """
-        while 1:
+        while self.run:
             self._event.wait()
             if not self._need_to_move_surface:
                 continue

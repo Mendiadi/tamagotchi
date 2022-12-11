@@ -25,6 +25,7 @@ class MainGame(Screen):
         # init buttons
         self.button_food = None
         self.drink_button = None
+        self.medic_button = None
         self.btn_flip = Button((10, 10), RGBColors.SKIN_COLOR, "flip", font_color=RGBColors.BLACK)
         self.btn_sleep = Button((200, 10), RGBColors.SKIN_COLOR, "sleep", font_color=RGBColors.BLACK)
         self.btn_animation = Button((550, 10), RGBColors.SKIN_COLOR, "dance", font_color=RGBColors.BLACK)
@@ -44,7 +45,7 @@ class MainGame(Screen):
         self.load_items()
         self.buttons = (self.btn_flip, self.btn_sleep, self.grow_up_btn,
                         self.btn_animation, self.back_btn, self.button_food,
-                        self.drink_button, self.shop_btn)
+                        self.drink_button, self.shop_btn,self.medic_button)
 
         self._is_start = False
 
@@ -58,14 +59,19 @@ class MainGame(Screen):
                                   width=self.images['food'].get_width(), height=self.images['food'].get_height(),
                                   txt=str(len(self.game.character.inventory['pizza'])), font_size=18
                                   )
-        self.button_food.set_onclick_function(lambda: self.change_amount_food(self.button_food,
-                                                                              self.game.shop['pizza']))
+        self.button_food.set_onclick_function(lambda: self.change_amount_items(self.button_food,
+                                                                               self.game.shop['pizza']))
         self.drink_button = Button((350, 535), image=self.images['drink'],
                                    width=self.images['drink'].get_width(), height=self.images['drink'].get_height(),
                                    txt=str(len(self.game.character.inventory['drink'])), font_size=18)
-        self.drink_button.set_onclick_function(lambda: self.change_amount_food(self.drink_button,
-                                                                               self.game.shop['drink']))
-
+        self.drink_button.set_onclick_function(lambda: self.change_amount_items(self.drink_button,
+                                                                                self.game.shop['drink']))
+        self.medic_button =  Button((230, 535), image=self.images['medic'],
+                              width=self.images['medic'].get_width(), height=self.images['medic'].get_height(),
+                              txt=str(len(self.game.character.inventory['medic'])), font_size=18
+                              )
+        self.medic_button.set_onclick_function(lambda: self.change_amount_items(self.medic_button,
+                                                                                self.game.shop['medic']))
     @misc.sound.button
     def _on_shop(self):
         self.game.temp_game_progress = self.game.screen
@@ -74,10 +80,14 @@ class MainGame(Screen):
     def refresh_items(self):
         self.button_food.txt = str(len(self.game.character.inventory['pizza']))
         self.drink_button.txt = str(len(self.game.character.inventory['drink']))
+        self.medic_button.txt = str(len(self.game.character.inventory['medic']))
 
-    def change_amount_food(self, btn, food):
-        self.game.character.eat(food)
-        btn.txt = str(len((self.game.character.inventory[food.name])))
+    def change_amount_items(self, btn, item):
+        if item.name == "medic":
+            self.game.character.add_life(item)
+        else:
+            self.game.character.eat(item)
+        btn.txt = str(len((self.game.character.inventory[item.name])))
 
     def show_stats(self):
         """

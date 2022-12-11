@@ -3,7 +3,6 @@ import threading
 import time
 import pygame
 
-
 from commons import misc, animator
 from commons.utils import GameState
 from characters import (
@@ -15,14 +14,14 @@ from characters import (
     Demogordan6,
     Demogordan7
 )
-from commons.food import Pizza, Drink
+from commons.food import Pizza, Drink, Medic
 from screens import (
     MainGame,
     MainMenu,
     SplashScreen,
     ShopScreen
 )
-from DB.db import DB,SaveProgress
+from DB.db import DB, SaveProgress
 
 
 class Tamagotchi:
@@ -31,13 +30,13 @@ class Tamagotchi:
 
     def __init__(self):
 
-        self.characters_collection = {  0:Demogordan,
-                                        1:Demogordan2,
-                                        2:Demogordan3,
-                                       3:Demogordan4,
-                                       4:Demogordan5,
-                                        5:Demogordan6,
-                                        6:Demogordan7}
+        self.characters_collection = {0: Demogordan,
+                                      1: Demogordan2,
+                                      2: Demogordan3,
+                                      3: Demogordan4,
+                                      4: Demogordan5,
+                                      5: Demogordan6,
+                                      6: Demogordan7}
         self.character = None
         self.event_thread = threading.Event()
         self.animate = None
@@ -46,18 +45,19 @@ class Tamagotchi:
         self.run = True
         self.db = DB()
         self.images = None
-        self.shop = {"pizza": Pizza(), "drink": Drink()}
+        self.shop = {"pizza": Pizza(), "drink": Drink(), "medic": Medic()}
         self.is_muted = False
-        self.evolution = 0 # means demogordan upgrade
+        self.evolution = 0  # means demogordan upgrade
         self.is_freezed = False
         self.current_save = None
-        self.temp_game_progress = None # saves the progress of running game todo make its point to save model class
+        self.temp_game_progress = None  # saves the progress of running game todo make its point to save model class
         self.in_game = False
 
     def reset(self):
+        self.animate.run = False
         self.temp_game_progress = None
         self.in_game = False
-
+        self.event_thread.clear()
 
     def reduce_params(self):
         """REDUCING VALUES BY X TIME RUNS IN THREAD"""
@@ -94,9 +94,11 @@ class Tamagotchi:
                     continue
             if self.character.energy > 0:
                 self.character.energy -= 2
+            if self.character.energy < 50 and self.character.food_bar < 50:
+                self.character.life_bar -= 3
             end = time.time()
 
-    def freeze_auto_reducing(self,btn_dance):
+    def freeze_auto_reducing(self, btn_dance):
         """
         freeze the auto reducing stats runs a thread
         timer after 10 seconds, calls when user hits dance button
@@ -106,16 +108,16 @@ class Tamagotchi:
         """
         btn_dance.hide()
         self.is_freezed = True
+
         def unfreezed():
             btn_dance.show()
             timer.cancel()
-        timer = threading.Timer(90,unfreezed)
+
+        timer = threading.Timer(90, unfreezed)
         timer.setDaemon(True)
         timer.start()
 
-
-
-    def start_game(self,save=None):
+    def start_game(self, save=None):
         """
             init new game if you pass save it will init game with
             save data otherwise it will start new game
@@ -128,8 +130,8 @@ class Tamagotchi:
             self.current_save = SaveProgress(None, self.character.age
                                              , self.evolution, self.character.coins,
                                              self.character.inventory,
-                                             datetime.datetime.now().ctime(), "my new2")
-
+                                             datetime.datetime.now().ctime(), "moshe5")
+            print(self.current_save)
         else:
             new_dict = {}
             for item, amount in save.inventory.items():
@@ -162,10 +164,11 @@ class Tamagotchi:
         :param evo:
         :return:
         """
-        #todo make character collections and implement level up
+        # todo make character collections and implement level up
         self.evolution += 1
         self.character = self.characters_collection[self.evolution]()
         self.save()
+
         self.reset()
         self.start_game()
 
@@ -189,8 +192,6 @@ class Tamagotchi:
             print(f"[update save] {save}")
             self.db.update_save(self.current_save)
 
-
-
     def load(self, win):
         """
         loading the game assets and data
@@ -200,8 +201,6 @@ class Tamagotchi:
         self.images = misc.load_images()
         misc.sound.load_sounds()
         self.screen = SplashScreen(win, self)
-
-
 
     def update_state(self, state):
         """updating game state"""
@@ -221,6 +220,7 @@ class Tamagotchi:
             self.reset()
 
             self.screen = MainMenu(self.screen.win, self)
+
         elif state == GameState.SHOP:
             self.screen = ShopScreen(self.screen.win, self)
 

@@ -20,6 +20,7 @@ class ShopScreen(Screen):
         self.background = images['shop']
         self.drink_image = images['drink']
         self.food_image = images['food']
+        self.medic_image = images['medic']
 
         # init buttons
         self.button_food = Button((300, 180), image=self.food_image,
@@ -31,7 +32,10 @@ class ShopScreen(Screen):
 
         self.back_btn = Button((400, 10), RGBColors.SKIN_COLOR, "back", font_color=RGBColors.BLACK)
         self.back_btn.set_onclick_function(self._on_leave)
-        self.buttons = (self.drink_button, self.button_food, self.back_btn)
+        self.medic_button = Button((500, 180), image=self.medic_image,
+                                   width=self.medic_image.get_width(), height=self.medic_image.get_height())
+        self.medic_button.set_onclick_function(lambda: self.game.character.buy(self.game.shop['medic']))
+        self.buttons = (self.drink_button, self.button_food, self.back_btn,self.medic_button)
 
     @misc.sound.button
     def _on_leave(self):
@@ -50,6 +54,8 @@ class ShopScreen(Screen):
                              self.win, 270, 240, size=15, vertical=False, color=RGBColors.WHITE.value)
         print_text_to_screen(f"drink price : {self.game.shop['drink'].price}",
                              self.win, 400, 240, size=15, vertical=False, color=RGBColors.WHITE.value)
+        print_text_to_screen(f"medic price : {self.game.shop['medic'].price}",
+                             self.win, 530, 240, size=15, vertical=False, color=RGBColors.WHITE.value)
         pygame.display.flip()
 
     def update(self, delta_t, event):
